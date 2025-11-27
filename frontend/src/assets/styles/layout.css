@@ -1,0 +1,30 @@
+/* Header */
+.header {
+  background-color: #282c34;
+  padding: 1rem;
+  color: white;
+}
+
+/* Navigation */
+.navbar a {
+  margin: 0 1rem;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  padding: 2rem;
+}
+
+/* Footer */
+.footer {
+  background-color: #f1f1f1;
+  padding: 1rem;
+  text-align: center;
+}
