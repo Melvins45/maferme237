@@ -1,6 +1,9 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
+import AuthLayout from "./layouts/AuthLayout";
+import Connexion from "./pages/Auth/Connexion";
+import Inscription from "./pages/Auth/Inscription";
 import Home from "./pages/Home";
 import Admin from "./pages/Admin";
 import ClientEntreprise from "./pages/ClientEntreprise";
@@ -25,6 +28,11 @@ export default function AppRoutes() {
             <Route index element={<Admin />} />
             <Route path="gestion" element={<Gestion />} />
             <Route path="investisseur" element={<Investisseur />} />
+          </Route>
+          {/* Auth routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/auth/connexion" element={<Connexion />} />
+            <Route path="/auth/inscription" element={<Inscription />} />
           </Route>
         </Routes>
       </BrowserRouter>

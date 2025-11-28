@@ -1,17 +1,18 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import logo from '../assets/images/maferme237_logo.png'; // remplace par ton chemin réel
 
 export default function MainLayout() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const navItems = [
     { name: 'Accueil', path: '/' },
     { name: 'Produits', path: '/precommandes' },
     { name: 'Souhaits', path: '/souhaits' },
-    { name: 'Connexion', path: '/connexion' },
-    { name: 'Inscription', path: '/inscription' },
+    { name: 'Connexion', path: '/auth/connexion' },
+    { name: 'Inscription', path: '/auth/inscription' },
   ];
 
   return (
@@ -26,22 +27,44 @@ export default function MainLayout() {
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex space-x-6 text-base font-medium">
-            {navItems.map(item => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`hover:pb-1 hover:border-b-2 hover:border-yellowGeneral ${
-                  location.pathname === item.path ? 'pb-1 border-b-2 border-yellowGeneral' : ''
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {navItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              const isLast = index === navItems.length - 1;
+
+              if (isLast) {
+                // Dernier élément → bouton
+                return (
+                  <button
+                    key={item.name}
+                    onClick={() => navigate(item.path)} // utilise useNavigate de react-router-dom
+                    className={`px-4 py-2 rounded bg-yellowGeneral text-white font-semibold hover:bg-yellow-500 ${
+                      isActive ? 'ring-2 ring-yellowGeneral' : ''
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                );
+              }
+
+              // Les autres → Link
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  className={`py-2 hover:pb-1 hover:border-b-2 hover:border-yellowGeneral ${
+                    isActive ? 'border-b-2 border-yellowGeneral' : ''
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+
           </nav>
 
           {/* Mobile Toggle */}
           <button
-            className="md:hidden text-yellow-300"
+            className="md:hidden text-yellowGeneral text-2xl"
             onClick={() => setMenuOpen(!menuOpen)}
           >
             ☰
@@ -69,18 +92,39 @@ export default function MainLayout() {
             </button>
           </div>
           <nav className="flex flex-col p-4 space-y-4 text-sm font-medium">
-            {navItems.map(item => (
-              <Link
-                key={item.name}
-                to={item.path}
-                onClick={() => setMenuOpen(false)}
-                className={`hover:pb-1 hover:border-b-2 hover:border-yellowGeneral ${
-                  location.pathname === item.path ? 'pb-1 border-b-2 border-yellowGeneral' : ''
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {navItems.map((item, index) => {
+              const isActive = location.pathname === item.path;
+              const isLast = index === navItems.length - 1;
+
+              if (isLast) {
+                // Dernier élément → bouton
+                return (
+                  <button
+                    key={item.name}
+                    onClick={() => {navigate(item.path);setMenuOpen(false);}} // utilise useNavigate de react-router-dom
+                    className={`px-4 py-2 rounded bg-yellowGeneral text-white font-semibold hover:bg-yellow-500 ${
+                      isActive ? 'ring-2 ring-yellowGeneral' : ''
+                    }`}
+                  >
+                    {item.name}
+                  </button>
+                );
+              }
+
+              // Les autres → Link
+              return (
+                <Link
+                  key={item.name}
+                  to={item.path}
+                  onClick={() => setMenuOpen(false)}
+                  className={`py-2 hover:pb-1 hover:border-b-2 hover:border-yellowGeneral ${
+                    isActive ? 'border-b-2 border-yellowGeneral' : ''
+                  }`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       </header>
