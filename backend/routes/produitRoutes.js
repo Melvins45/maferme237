@@ -15,15 +15,17 @@ const authenticate = require("../middlewares/auth");
  * @swagger
  * /produits:
  *   post:
- *     summary: Create a new product
+ *     summary: Create a new product with images
  *     tags: [Produits]
  *     security:
  *       - bearerAuth: []
  *     description: |
  *       Create a product based on user role:
  *       - Gestionnaires: product is directly verified (statutVerification=verified) and statutProduction=finished
- *       - Fournisseurs: product is NOT verified (statutVerification=not_verified) and statutProduction=finished
- *       - Producteurs: product is NOT verified (statutVerification=not_verified) and statutProduction=started
+ *       - Fournisseurs: product is NOT verified (statutVerification=waiting_verification) and statutProduction=finished
+ *       - Producteurs: product is NOT verified (statutVerification=waiting_verification) and statutProduction=started
+ *       
+ *       Images: Pass as array of base64 or blob strings in "images" field. First image becomes main image (estImagePrincipale=true)
  *     requestBody:
  *       required: true
  *       content:
@@ -67,9 +69,15 @@ const authenticate = require("../middlewares/auth");
  *               idCategorieProduit:
  *                 type: integer
  *                 description: Product category ID
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   format: binary
+ *                 description: Array of image blobs. First image is main image.
  *     responses:
  *       201:
- *         description: Product successfully created
+ *         description: Product successfully created with images
  *         content:
  *           application/json:
  *             schema:
@@ -83,6 +91,13 @@ const authenticate = require("../middlewares/auth");
  *                     nomProduit: { type: string }
  *                     statutVerificationProduit: { type: string }
  *                     statutProductionProduit: { type: string }
+ *                     images:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           idProduitImage: { type: integer }
+ *                           estImagePrincipale: { type: boolean }
  *       400:
  *         description: Missing required fields
  *       401:
@@ -94,11 +109,11 @@ const authenticate = require("../middlewares/auth");
  *       500:
  *         description: Server error
  *   get:
- *     summary: Get all products
+ *     summary: Get all products with images
  *     tags: [Produits]
  *     responses:
  *       200:
- *         description: List of all products
+ *         description: List of all products with their images
  *         content:
  *           application/json:
  *             schema:
@@ -111,6 +126,14 @@ const authenticate = require("../middlewares/auth");
  *                   descriptionProduit: { type: string }
  *                   statutVerificationProduit: { type: string }
  *                   statutProductionProduit: { type: string }
+ *                   images:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         idProduitImage: { type: integer }
+ *                         blobImage: { type: string, format: binary }
+ *                         estImagePrincipale: { type: boolean }
  *       500:
  *         description: Server error
  */
@@ -121,7 +144,7 @@ router.get("/", produitController.getProduits);
  * @swagger
  * /produits/{idProduit}:
  *   get:
- *     summary: Get a single product by ID
+ *     summary: Get a single product by ID with images
  *     tags: [Produits]
  *     parameters:
  *       - in: path
@@ -131,7 +154,7 @@ router.get("/", produitController.getProduits);
  *           type: integer
  *     responses:
  *       200:
- *         description: Product found
+ *         description: Product found with all images
  *         content:
  *           application/json:
  *             schema:
@@ -139,6 +162,14 @@ router.get("/", produitController.getProduits);
  *               properties:
  *                 idProduit: { type: integer }
  *                 nomProduit: { type: string }
+ *                 images:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       idProduitImage: { type: integer }
+ *                       blobImage: { type: string, format: binary }
+ *                       estImagePrincipale: { type: boolean }
  *       400:
  *         description: Missing idProduit parameter
  *       404:
@@ -177,13 +208,13 @@ router.get("/", produitController.getProduits);
  *               idCategorieProduit: { type: integer }
  *     responses:
  *       200:
- *         description: Product successfully updated
+ *         description: Product successfully updated with category and images
  *       400:
  *         description: Missing idProduit parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - only gestionnaire can update
+ *         description: Accès refusé - only gestionnaire or product owner fournisseur can update
  *       404:
  *         description: Product or category not found
  *       500:
@@ -207,7 +238,7 @@ router.get("/", produitController.getProduits);
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - only gestionnaire can delete
+ *         description: Accès refusé - only gestionnaire or product owner fournisseur can delete
  *       404:
  *         description: Product not found
  *       500:

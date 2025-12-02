@@ -184,8 +184,7 @@ exports.updateProducteur = async (req, res) => {
 
 /**
  * Delete a producteur
- * Secure models cannot delete themselves unless admin/gestionnaire
- * Admin/Gestionnaire can delete producteurs
+ * Only administrateurs can delete producteurs
  */
 exports.deleteProducteur = async (req, res) => {
   try {
@@ -203,17 +202,9 @@ exports.deleteProducteur = async (req, res) => {
       return res.status(400).json({ error: "idProducteur requis" });
     }
 
-    const isOwnId = caller.sub == idProducteur;
-    const isAdminOrGest = ensureRoles(caller, ["administrateur", "gestionnaire"]);
-
-    // Producteur cannot delete itself (only admin/gestionnaire can)
-    if (isOwnId) {
-      return res.status(403).json({ error: "Accès refusé : seul un administrateur ou gestionnaire peut supprimer un producteur" });
-    }
-
-    // Only admin/gestionnaire can delete producteurs
-    if (!isAdminOrGest) {
-      return res.status(403).json({ error: "Accès refusé" });
+    // Only administrateur can delete producteurs
+    if (!ensureRoles(caller, ["administrateur"])) {
+      return res.status(403).json({ error: "Accès refusé : seul un administrateur peut supprimer un producteur" });
     }
 
     const producteur = await Producteurs.findOne({ where: { idProducteur } });

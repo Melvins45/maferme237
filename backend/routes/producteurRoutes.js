@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const producteurController = require("../controllers/producteurController");
+const authenticate = require("../middlewares/auth");
 
 /**
  * @swagger
@@ -130,8 +131,33 @@ router.get("/", producteurController.getProducteurs);
  *         description: Producteur not found
  *       500:
  *         description: Server error
+ *   delete:
+ *     summary: Delete a producteur
+ *     tags: [Producteurs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: idProducteur
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Producteur deleted successfully
+ *       400:
+ *         description: Missing idProducteur parameter
+ *       401:
+ *         description: Token manquant or invalid
+ *       403:
+ *         description: Accès refusé - only administrateur can delete producteurs
+ *       404:
+ *         description: Producteur not found
+ *       500:
+ *         description: Server error
  */
 router.get("/:idProducteur", producteurController.getProducteur);
 router.put("/:idProducteur", producteurController.updateProducteur);
+router.delete("/:idProducteur", authenticate, producteurController.deleteProducteur);
 
 module.exports = router;

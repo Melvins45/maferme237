@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const livreurController = require("../controllers/livreurController");
+const authenticate = require("../middlewares/auth");
 
 /**
  * @swagger
@@ -130,8 +131,33 @@ router.get("/", livreurController.getLivreurs);
  *         description: Livreur not found
  *       500:
  *         description: Server error
+ *   delete:
+ *     summary: Delete a livreur
+ *     tags: [Livreurs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: idLivreur
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Livreur deleted successfully
+ *       400:
+ *         description: Missing idLivreur parameter
+ *       401:
+ *         description: Token manquant or invalid
+ *       403:
+ *         description: Accès refusé - only administrateur can delete livreurs
+ *       404:
+ *         description: Livreur not found
+ *       500:
+ *         description: Server error
  */
 router.get("/:idLivreur", livreurController.getLivreur);
 router.put("/:idLivreur", livreurController.updateLivreur);
+router.delete("/:idLivreur", authenticate, livreurController.deleteLivreur);
 
 module.exports = router;

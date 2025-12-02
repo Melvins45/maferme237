@@ -17,7 +17,9 @@ const ensureRoles = (payload, allowedRoles) => {
 
 /**
  * Get all administrateurs with their person data
- * Only administrateurs can access and only view those with equal or inferior level
+ * Niveau 1: Peut voir tous les administrateurs
+ * Niveau 2: Peut voir les administrateurs de niveau 2 et supérieur
+ * Niveau 3: Peut voir seulement les administrateurs de niveau 3
  */
 exports.getAdministrateurs = async (req, res) => {
   try {
@@ -39,11 +41,29 @@ exports.getAdministrateurs = async (req, res) => {
     const callerAdmin = await Administrateurs.findOne({ where: { idAdministrateur: caller.sub } });
     if (!callerAdmin) return res.status(403).json({ error: "Administrateur non trouvé" });
 
-    // Get all administrateurs with equal or inferior level
-    const administrateurs = await Administrateurs.findAll({
-      where: { niveauAccesAdministrateur: { [require("sequelize").Op.lte]: callerAdmin.niveauAccesAdministrateur } },
-      include: { model: Personnes, attributes: { exclude: ["motDePassePersonne"] } }
-    });
+    let administrateurs;
+    const Sequelize = require("sequelize");
+
+    // Niveau 1: Peut voir tous les admins
+    if (callerAdmin.niveauAccesAdministrateur === 1) {
+      administrateurs = await Administrateurs.findAll({
+        include: { model: Personnes, attributes: { exclude: ["motDePassePersonne"] } }
+      });
+    }
+    // Niveau 2: Peut voir niveaux 2 et supérieur (1,2)
+    else if (callerAdmin.niveauAccesAdministrateur === 2) {
+      administrateurs = await Administrateurs.findAll({
+        where: { niveauAccesAdministrateur: { [Sequelize.Op.lte]: 2 } },
+        include: { model: Personnes, attributes: { exclude: ["motDePassePersonne"] } }
+      });
+    }
+    // Niveau 3: Peut voir seulement niveaux 3
+    else if (callerAdmin.niveauAccesAdministrateur === 3) {
+      administrateurs = await Administrateurs.findAll({
+        where: { niveauAccesAdministrateur: 3 },
+        include: { model: Personnes, attributes: { exclude: ["motDePassePersonne"] } }
+      });
+    }
 
     const response = administrateurs.map(a => {
       const personneData = a.Personne.toJSON();
@@ -132,7 +152,9 @@ exports.getAdministrateur = async (req, res) => {
 
 /**
  * Update an administrateur
- * Allow update if ID matches OR if caller is admin with strict superior level
+ * Niveau 1: Peut modifier tous les autres admins et assigner niveaux jusqu'à 1
+ * Niveau 2: Peut modifier les admins de niveau 3 seulement et assigner seulement niveau 3
+ * Niveau 3: Ne peut modifier aucun autre admin
  */
 exports.updateAdministrateur = async (req, res) => {
   try {
@@ -151,23 +173,31 @@ exports.updateAdministrateur = async (req, res) => {
     }
 
     const isOwnId = caller.sub == idAdministrateur;
+    const callerAdmin = await Administrateurs.findOne({ where: { idAdministrateur: caller.sub } });
 
+    if (!callerAdmin) {
+      return res.status(403).json({ error: "Accès refusé" });
+    }
+
+    // Si ce n'est pas son propre ID
     if (!isOwnId) {
-      // If not own ID, must be admin with strict superior level
-      if (!ensureRoles(caller, ["administrateur"])) {
-        return res.status(403).json({ error: "Accès refusé" });
-      }
-
-      const callerAdmin = await Administrateurs.findOne({ where: { idAdministrateur: caller.sub } });
       const targetAdmin = await Administrateurs.findOne({ where: { idAdministrateur } });
       
-      if (!callerAdmin || !targetAdmin) {
-        return res.status(403).json({ error: "Accès refusé" });
+      if (!targetAdmin) {
+        return res.status(404).json({ error: "Administrateur cible non trouvé" });
       }
 
-      // Strict superior level check (>) not (>=)
-      if (callerAdmin.niveauAccesAdministrateur <= targetAdmin.niveauAccesAdministrateur) {
-        return res.status(403).json({ error: "Accès refusé : niveau insuffisant" });
+      // Vérifier les permissions selon le niveau du caller
+      if (callerAdmin.niveauAccesAdministrateur === 1) {
+        // Niveau 1: Peut modifier tous les autres admins
+      } else if (callerAdmin.niveauAccesAdministrateur === 2) {
+        // Niveau 2: Peut modifier seulement les admins de niveau 3
+        if (targetAdmin.niveauAccesAdministrateur !== 3) {
+          return res.status(403).json({ error: "Accès refusé : niveau 2 ne peut modifier que les admins de niveau 3" });
+        }
+      } else if (callerAdmin.niveauAccesAdministrateur === 3) {
+        // Niveau 3: Ne peut modifier aucun autre admin
+        return res.status(403).json({ error: "Accès refusé : niveau 3 ne peut modifier aucun autre admin" });
       }
     }
 
@@ -190,6 +220,20 @@ exports.updateAdministrateur = async (req, res) => {
     // Update administrateur fields
     const { niveauAccesAdministrateur } = req.body;
     if (niveauAccesAdministrateur !== undefined) {
+      // Vérifier que le caller ne peut assigner que les niveaux appropriés
+      if (!isOwnId) {
+        if (callerAdmin.niveauAccesAdministrateur === 1) {
+          // Niveau 1: Peut assigner jusqu'au niveau 1
+          if (niveauAccesAdministrateur < 1 || niveauAccesAdministrateur > 1) {
+            return res.status(400).json({ error: "Niveau 1 ne peut assigner que le niveau 1" });
+          }
+        } else if (callerAdmin.niveauAccesAdministrateur === 2) {
+          // Niveau 2: Peut assigner seulement niveau 3
+          if (niveauAccesAdministrateur !== 3) {
+            return res.status(400).json({ error: "Niveau 2 ne peut assigner que le niveau 3" });
+          }
+        }
+      }
       administrateur.niveauAccesAdministrateur = niveauAccesAdministrateur;
     }
 
@@ -219,8 +263,9 @@ exports.updateAdministrateur = async (req, res) => {
 
 /**
  * Delete an administrateur
- * Cannot delete own admin account unless level 1
- * Admins can delete other admins with strict superior level and all other models
+ * Niveau 1: Peut se supprimer lui-même et supprimer les niveaux 2 et 3
+ * Niveau 2: Peut supprimer seulement les niveaux 3
+ * Niveau 3: Ne peut supprimer aucun admin
  */
 exports.deleteAdministrateur = async (req, res) => {
   try {
@@ -239,35 +284,36 @@ exports.deleteAdministrateur = async (req, res) => {
     }
 
     const isOwnId = caller.sub == idAdministrateur;
+    const callerAdmin = await Administrateurs.findOne({ where: { idAdministrateur: caller.sub } });
 
-    // Cannot delete own admin account unless level 1
-    if (isOwnId) {
-      const callerAdmin = await Administrateurs.findOne({ where: { idAdministrateur: caller.sub } });
-      if (!callerAdmin || callerAdmin.niveauAccesAdministrateur !== 1) {
-        return res.status(403).json({ error: "Accès refusé : seul un administrateur niveau 1 peut se supprimer" });
-      }
-    } else {
-      // If not own ID, must be admin with strict superior level
-      if (!ensureRoles(caller, ["administrateur"])) {
-        return res.status(403).json({ error: "Accès refusé" });
-      }
-
-      const callerAdmin = await Administrateurs.findOne({ where: { idAdministrateur: caller.sub } });
-      const targetAdmin = await Administrateurs.findOne({ where: { idAdministrateur } });
-      
-      if (!callerAdmin || !targetAdmin) {
-        return res.status(403).json({ error: "Accès refusé" });
-      }
-
-      // Strict superior level check (>) not (>=)
-      if (callerAdmin.niveauAccesAdministrateur <= targetAdmin.niveauAccesAdministrateur) {
-        return res.status(403).json({ error: "Accès refusé : niveau insuffisant" });
-      }
+    if (!callerAdmin) {
+      return res.status(403).json({ error: "Accès refusé" });
     }
 
     const administrateur = await Administrateurs.findOne({ where: { idAdministrateur } });
     if (!administrateur) {
       return res.status(404).json({ error: "Administrateur non trouvé" });
+    }
+
+    // Vérifier les permissions selon le niveau du caller
+    if (isOwnId) {
+      // Seul un admin niveau 1 peut se supprimer lui-même
+      if (callerAdmin.niveauAccesAdministrateur !== 1) {
+        return res.status(403).json({ error: "Accès refusé : seul un administrateur niveau 1 peut se supprimer" });
+      }
+    } else {
+      // Supprimer un autre admin
+      if (callerAdmin.niveauAccesAdministrateur === 1) {
+        // Niveau 1: Peut supprimer les niveaux 2 et 3
+      } else if (callerAdmin.niveauAccesAdministrateur === 2) {
+        // Niveau 2: Peut supprimer seulement les niveaux 3
+        if (administrateur.niveauAccesAdministrateur !== 3) {
+          return res.status(403).json({ error: "Accès refusé : niveau 2 ne peut supprimer que les admins de niveau 3" });
+        }
+      } else if (callerAdmin.niveauAccesAdministrateur === 3) {
+        // Niveau 3: Ne peut supprimer aucun admin
+        return res.status(403).json({ error: "Accès refusé : niveau 3 ne peut supprimer aucun admin" });
+      }
     }
 
     await administrateur.destroy();

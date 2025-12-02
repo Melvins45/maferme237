@@ -184,8 +184,7 @@ exports.updateLivreur = async (req, res) => {
 
 /**
  * Delete a livreur
- * Secure models cannot delete themselves unless admin/gestionnaire
- * Admin/Gestionnaire can delete livreurs
+ * Only administrateurs can delete livreurs
  */
 exports.deleteLivreur = async (req, res) => {
   try {
@@ -203,17 +202,9 @@ exports.deleteLivreur = async (req, res) => {
       return res.status(400).json({ error: "idLivreur requis" });
     }
 
-    const isOwnId = caller.sub == idLivreur;
-    const isAdminOrGest = ensureRoles(caller, ["administrateur", "gestionnaire"]);
-
-    // Livreur cannot delete itself (only admin/gestionnaire can)
-    if (isOwnId) {
-      return res.status(403).json({ error: "Accès refusé : seul un administrateur ou gestionnaire peut supprimer un livreur" });
-    }
-
-    // Only admin/gestionnaire can delete livreurs
-    if (!isAdminOrGest) {
-      return res.status(403).json({ error: "Accès refusé" });
+    // Only administrateur can delete livreurs
+    if (!ensureRoles(caller, ["administrateur"])) {
+      return res.status(403).json({ error: "Accès refusé : seul un administrateur peut supprimer un livreur" });
     }
 
     const livreur = await Livreurs.findOne({ where: { idLivreur } });

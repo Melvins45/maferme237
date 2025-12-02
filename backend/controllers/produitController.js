@@ -1,5 +1,5 @@
 // controllers/produitController.js
-const { Produits, CategorieProduits } = require("../models");
+const { Produits, CategorieProduits, ProduitImages } = require("../models");
 const { verifyToken } = require("../services/jwtService");
 
 const extractBearer = (req) => {
@@ -17,9 +17,9 @@ const ensureRoles = (payload, allowedRoles) => {
 
 /**
  * Create a product
- * - Gestionnaires: product is directly verified and statutProduction = finished
- * - Fournisseurs: product is NOT verified and statutProduction = finished
- * - Producteurs: product is NOT verified and statutProduction = started
+ * - Gestionnaires: product is directly verified (statusVerification=verified) and statutProduction = finished
+ * - Fournisseurs: product is NOT verified (statusVerification=waiting_verification) and statutProduction = finished
+ * - Producteurs: product is NOT verified (statusVerification=waiting_verification) and statutProduction = started
  */
 exports.createProduit = async (req, res) => {
   try {
@@ -47,7 +47,8 @@ exports.createProduit = async (req, res) => {
       stockFournisseurProduit,
       quantiteMinProduitEntreprise,
       quantiteMinProduitClient,
-      idCategorieProduit
+      idCategorieProduit,
+      images
     } = req.body;
 
     // Validate required fields
@@ -74,13 +75,13 @@ exports.createProduit = async (req, res) => {
       statutProductionProduit = "finished";
       idGestionnaire = caller.sub;
     } else if (ensureRoles(caller, ["fournisseur"])) {
-      // Fournisseur: not verified, finished production
-      statutVerificationProduit = "not_verified";
+      // Fournisseur: waiting verification, finished production
+      statutVerificationProduit = "waiting_verification";
       statutProductionProduit = "finished";
       idFournisseur = caller.sub;
     } else if (ensureRoles(caller, ["producteur"])) {
-      // Producteur: not verified, started production
-      statutVerificationProduit = "not_verified";
+      // Producteur: waiting verification, started production
+      statutVerificationProduit = "waiting_verification";
       statutProductionProduit = "started";
     }
 
@@ -102,11 +103,33 @@ exports.createProduit = async (req, res) => {
       idFournisseur: idFournisseur || null
     });
 
-    const produitData = produit.toJSON();
+    // Handle images if provided
+    if (images && Array.isArray(images) && images.length > 0) {
+      for (let i = 0; i < images.length; i++) {
+        const imageBlob = images[i];
+        const isMainImage = i === 0; // First image is the main image
+
+        await ProduitImages.create({
+          idProduit: produit.idProduit,
+          blobImage: imageBlob,
+          estImagePrincipale: isMainImage,
+          texteAltImage: `Image ${i + 1} du produit ${nomProduit}`
+        });
+      }
+    }
+
+    // Retrieve the created product with images
+    const produitWithImages = await Produits.findOne({
+      where: { idProduit: produit.idProduit },
+      include: [
+        { model: CategorieProduits, as: 'categorie', attributes: ['idCategorieProduit', 'nomCategorie', 'descriptionCategorie'] },
+        { model: ProduitImages, as: 'images' }
+      ]
+    });
 
     res.status(201).json({
       message: "Produit créé avec succès",
-      produit: produitData
+      produit: produitWithImages
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -114,12 +137,15 @@ exports.createProduit = async (req, res) => {
 };
 
 /**
- * Get all products
+ * Get all products with images and category
  */
 exports.getProduits = async (req, res) => {
   try {
     const produits = await Produits.findAll({
-      include: { model: CategorieProduits, as: 'categorie' }
+      include: [
+        { model: CategorieProduits, as: 'categorie', attributes: ['idCategorieProduit', 'nomCategorie', 'descriptionCategorie'] },
+        { model: ProduitImages, as: 'images' }
+      ]
     });
 
     res.status(200).json(produits);
@@ -129,7 +155,7 @@ exports.getProduits = async (req, res) => {
 };
 
 /**
- * Get a single product by ID
+ * Get a single product by ID with images and category
  */
 exports.getProduit = async (req, res) => {
   try {
@@ -141,7 +167,10 @@ exports.getProduit = async (req, res) => {
 
     const produit = await Produits.findOne({
       where: { idProduit },
-      include: { model: CategorieProduits, as: 'categorie' }
+      include: [
+        { model: CategorieProduits, as: 'categorie', attributes: ['idCategorieProduit', 'nomCategorie', 'descriptionCategorie'] },
+        { model: ProduitImages, as: 'images' }
+      ]
     });
 
     if (!produit) {
@@ -156,7 +185,8 @@ exports.getProduit = async (req, res) => {
 
 /**
  * Update a product
- * Only gestionnaires can update products
+ * Only gestionnaires can update all products
+ * Fournisseurs can update their own products (where idFournisseur matches)
  */
 exports.updateProduit = async (req, res) => {
   try {
@@ -169,11 +199,6 @@ exports.updateProduit = async (req, res) => {
       return res.status(401).json({ error: "Token invalide" });
     }
 
-    // Only gestionnaire can update
-    if (!ensureRoles(caller, ["gestionnaire"])) {
-      return res.status(403).json({ error: "Accès refusé : seuls les gestionnaires peuvent modifier les produits" });
-    }
-
     const { idProduit } = req.params;
     if (!idProduit) {
       return res.status(400).json({ error: "idProduit requis" });
@@ -182,6 +207,15 @@ exports.updateProduit = async (req, res) => {
     const produit = await Produits.findOne({ where: { idProduit } });
     if (!produit) {
       return res.status(404).json({ error: "Produit non trouvé" });
+    }
+
+    // Check authorization
+    const isGestionnaire = ensureRoles(caller, ["gestionnaire"]);
+    const isFournisseur = ensureRoles(caller, ["fournisseur"]);
+    const isFournisseurOwner = isFournisseur && produit.idFournisseur == caller.sub;
+
+    if (!isGestionnaire && !isFournisseurOwner) {
+      return res.status(403).json({ error: "Accès refusé : seuls les gestionnaires ou le fournisseur propriétaire peuvent modifier ce produit" });
     }
 
     const {
@@ -225,7 +259,10 @@ exports.updateProduit = async (req, res) => {
 
     const produitUpdated = await Produits.findOne({
       where: { idProduit },
-      include: { model: CategorieProduits, as: 'categorie' }
+      include: [
+        { model: CategorieProduits, as: 'categorie', attributes: ['idCategorieProduit', 'nomCategorie', 'descriptionCategorie'] },
+        { model: ProduitImages, as: 'images' }
+      ]
     });
 
     res.status(200).json({
@@ -239,7 +276,8 @@ exports.updateProduit = async (req, res) => {
 
 /**
  * Delete a product
- * Only gestionnaires can delete products
+ * Only gestionnaires can delete all products
+ * Fournisseurs can delete their own products (where idFournisseur matches)
  */
 exports.deleteProduit = async (req, res) => {
   try {
@@ -252,11 +290,6 @@ exports.deleteProduit = async (req, res) => {
       return res.status(401).json({ error: "Token invalide" });
     }
 
-    // Only gestionnaire can delete
-    if (!ensureRoles(caller, ["gestionnaire"])) {
-      return res.status(403).json({ error: "Accès refusé : seuls les gestionnaires peuvent supprimer les produits" });
-    }
-
     const { idProduit } = req.params;
     if (!idProduit) {
       return res.status(400).json({ error: "idProduit requis" });
@@ -265,6 +298,15 @@ exports.deleteProduit = async (req, res) => {
     const produit = await Produits.findOne({ where: { idProduit } });
     if (!produit) {
       return res.status(404).json({ error: "Produit non trouvé" });
+    }
+
+    // Check authorization
+    const isGestionnaire = ensureRoles(caller, ["gestionnaire"]);
+    const isFournisseur = ensureRoles(caller, ["fournisseur"]);
+    const isFournisseurOwner = isFournisseur && produit.idFournisseur == caller.sub;
+
+    if (!isGestionnaire && !isFournisseurOwner) {
+      return res.status(403).json({ error: "Accès refusé : seuls les gestionnaires ou le fournisseur propriétaire peuvent supprimer ce produit" });
     }
 
     await produit.destroy();
