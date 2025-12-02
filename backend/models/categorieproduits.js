@@ -27,12 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'idGestionnaire',
         as: 'gestionnaireCreateur'
       });
-
-      // Many-to-One: CategorieProduits belongs to Administrateur (optional creator)
-      CategorieProduits.belongsTo(models.Administrateurs, {
-        foreignKey: 'idAdministrateur',
-        as: 'administrateurCreateur'
-      });
     }
   }
 
@@ -54,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true
       },
-      dateCreationCategorie: {
+      dateCreationCategorieProduit: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW
@@ -68,10 +62,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true
       },
       idGestionnaire: {
-        type: DataTypes.INTEGER,
-        allowNull: true
-      },
-      idAdministrateur: {
         type: DataTypes.INTEGER,
         allowNull: true
       }

@@ -4,15 +4,15 @@ const {
 } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Produitcaracteristiques extends Model {
+  class ProduitCaracteristiques extends Model {
     static associate(models) {
-      this.belongsTo(models.Produits, { foreignKey: 'ProduitIdProduit' });
-      // In models/produits.js consider: this.hasMany(models.Produitcaracteristiques, { foreignKey: 'ProduitIdProduit' });
+      this.belongsTo(models.Produits, { foreignKey: 'idProduit' });
+      // In models/produits.js consider: this.hasMany(models.ProduitCaracteristiques, { foreignKey: 'idProduit' });
       this.belongsTo(models.Caracteristiques, { foreignKey: 'idCaracteristique' });
-      // In models/caracteristiques.js consider: this.hasMany(models.Produitcaracteristiques, { foreignKey: 'idCaracteristique' });
+      // In models/caracteristiques.js consider: this.hasMany(models.ProduitCaracteristiques, { foreignKey: 'idCaracteristique' });
     }
   }
-  Produitcaracteristiques.init({
+  ProduitCaracteristiques.init({
     valeurCaracteristique: {
       type: DataTypes.STRING(255),
       primaryKey: true,
@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: DataTypes.NOW
     },
-    ProduitIdProduit: {
+    idProduit: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
@@ -37,9 +37,9 @@ module.exports = (sequelize, DataTypes) => {
     },
   }, {
     sequelize,
-    modelName: 'Produitcaracteristiques',
+    modelName: 'ProduitCaracteristiques',
     tableName: 'produitcaracteristiques',
     timestamps: true
   });
-  return Produitcaracteristiques;
+  return ProduitCaracteristiques;
 };

@@ -1,0 +1,1616 @@
+{
+	"info": {
+		"_postman_id": "f1a2c3d4-e5f6-47g8-h9i0-j1k2l3m4n5o6",
+		"name": "maferme237 - Produits & Caractéristiques",
+		"description": "Collection complète pour tester les API Produits et Caractéristiques avec tests automatisés",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22986726"
+	},
+	"item": [
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "Login Fournisseur",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"✓ Token reçu\", function () {",
+									"    pm.expect(jsonData).to.have.property(\"token\");",
+									"});",
+									"",
+									"pm.test(\"✓ Fournisseur trouvé\", function () {",
+									"    pm.expect(jsonData).to.have.property(\"fournisseur\");",
+									"});",
+									"",
+									"pm.environment.set(\"tokenFournisseur\", jsonData.token);",
+									"pm.environment.set(\"idFournisseur\", jsonData.fournisseur.idFournisseur);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"emailPersonne\": \"user5@example.com\",\n  \"motDePassePersonne\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login Gestionnaire",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"✓ Token reçu\", function () {",
+									"    pm.expect(jsonData).to.have.property(\"token\");",
+									"});",
+									"",
+									"pm.test(\"✓ Gestionnaire trouvé\", function () {",
+									"    pm.expect(jsonData).to.have.property(\"gestionnaire\");",
+									"});",
+									"",
+									"pm.environment.set(\"tokenGestionnaire\", jsonData.token);",
+									"pm.environment.set(\"idGestionnaire\", jsonData.gestionnaire.idGestionnaire);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"emailPersonne\": \"manager@maferme237.com\",\n  \"motDePassePersonne\": \"maferme237Douala@2025\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Login Producteur",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"✓ Token reçu\", function () {",
+									"    pm.expect(jsonData).to.have.property(\"token\");",
+									"});",
+									"",
+									"pm.environment.set(\"tokenProducteur\", jsonData.token);",
+									"pm.environment.set(\"idProducteur\", jsonData.producteur.idProducteur);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"emailPersonne\": \"producer@maferme237.com\",\n  \"motDePassePersonne\": \"string\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/auth/login",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "auth", "login"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📂 Catégories",
+			"item": [
+				{
+					"name": "GET - Obtenir toutes les catégories",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Réponse est un objet\", function () {",
+									"    pm.expect(jsonData).to.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"✓ Propriété 'success' existe\", function () {",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"});",
+									"",
+									"pm.test(\"✓ Propriété 'data' est un array\", function () {",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"if (jsonData.data.length > 0) {",
+									"    pm.environment.set(\"idCategorie\", jsonData.data[0].idCategorieProduit);",
+									"    pm.test(\"✓ Première catégorie a idCategorieProduit\", function () {",
+									"        pm.expect(jsonData.data[0]).to.have.property('idCategorieProduit');",
+									"    });",
+									"    pm.test(\"✓ Première catégorie a nomCategorie\", function () {",
+									"        pm.expect(jsonData.data[0]).to.have.property('nomCategorie');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/categories",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "categories"]
+						}
+					}
+				},
+				{
+					"name": "GET - Obtenir une catégorie par ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"✓ Réponse 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    let jsonData = pm.response.json();",
+									"    pm.test(\"✓ Réponse contient 'success'\", function () {",
+									"        pm.expect(jsonData).to.have.property('success');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Réponse contient 'data'\", function () {",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Data contient idCategorieProduit\", function () {",
+									"        pm.expect(jsonData.data).to.have.property('idCategorieProduit');",
+									"    });",
+									"} else {",
+									"    pm.test(\"⚠ Pas de catégorie avec cet ID\", function () {",
+									"        pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/categories/{{idCategorie}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "categories", "{{idCategorie}}"]
+						}
+					}
+				},
+				{
+					"name": "POST - Créer une catégorie (Producteur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Réponse contient 'success'\", function () {",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"✓ Réponse contient 'data' avec idCategorieProduit\", function () {",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('idCategorieProduit');",
+									"});",
+									"",
+									"pm.test(\"✓ Réponse contient 'message'\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.environment.set(\"idCategorieCreated\", jsonData.data.idCategorieProduit);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenProducteur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomCategorie\": \"Légumes frais\",\n  \"descriptionCategorie\": \"Catégorie des légumes cultivés localement\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/categories",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "categories"]
+						}
+					}
+				},
+				{
+					"name": "POST - Créer une catégorie (Gestionnaire)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Catégorie créée avec succès\", function () {",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.environment.set(\"idCategorieGestionnaire\", jsonData.data.idCategorieProduit);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomCategorie\": \"Fruits exotiques\",\n  \"descriptionCategorie\": \"Fruits tropicaux importés\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/categories",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "categories"]
+						}
+					}
+				},
+				{
+					"name": "PUT - Modifier une catégorie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Modification réussie\", function () {",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomCategorie\": \"Fruits exotiques Premium\",\n  \"descriptionCategorie\": \"Fruits tropicaux importés de qualité supérieure\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/categories/{{idCategorieGestionnaire}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "categories", "{{idCategorieGestionnaire}}"]
+						}
+					}
+				},
+				{
+					"name": "DELETE - Supprimer une catégorie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"✓ Réponse 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    let jsonData = pm.response.json();",
+									"    pm.test(\"✓ Suppression réussie\", function () {",
+									"        pm.expect(jsonData).to.have.property('success');",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"    });",
+									"} else if (pm.response.code === 403) {",
+									"    pm.test(\"✓ Accès refusé (seul gestionnaire peut supprimer)\", function () {",
+									"        pm.response.to.have.status(403);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/categories/{{idCategorieCreated}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "categories", "{{idCategorieCreated}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Caractéristiques",
+			"item": [
+				{
+					"name": "GET - Obtenir toutes les caractéristiques",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Réponse est un objet\", function () {",
+									"    pm.expect(jsonData).to.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"✓ Propriété 'success' existe\", function () {",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"});",
+									"",
+									"pm.test(\"✓ Propriété 'data' est un array\", function () {",
+									"    pm.expect(jsonData.data).to.be.an('array');",
+									"});",
+									"",
+									"if (jsonData.data.length > 0) {",
+									"    pm.environment.set(\"idCaracteristique\", jsonData.data[0].idCaracteristique);",
+									"    pm.test(\"✓ Première caractéristique a idCaracteristique\", function () {",
+									"        pm.expect(jsonData.data[0]).to.have.property('idCaracteristique');",
+									"    });",
+									"    pm.test(\"✓ Première caractéristique a nomCaracteristique\", function () {",
+									"        pm.expect(jsonData.data[0]).to.have.property('nomCaracteristique');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques"]
+						}
+					}
+				},
+				{
+					"name": "GET - Obtenir une caractéristique par ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Vérifier si l'ID de caractéristique existe dans l'environnement"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"✓ Réponse 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    let jsonData = pm.response.json();",
+									"    pm.test(\"✓ Réponse contient 'success'\", function () {",
+									"        pm.expect(jsonData).to.have.property('success');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Réponse contient 'data'\", function () {",
+									"        pm.expect(jsonData).to.have.property('data');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Data contient idCaracteristique\", function () {",
+									"        pm.expect(jsonData.data).to.have.property('idCaracteristique');",
+									"    });",
+									"} else {",
+									"    pm.test(\"⚠ Pas de caractéristique avec cet ID\", function () {",
+									"        pm.expect(pm.response.code).to.be.oneOf([200, 404]);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques/{{idCaracteristique}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques", "{{idCaracteristique}}"]
+						}
+					}
+				},
+				{
+					"name": "POST - Créer une caractéristique (Producteur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Réponse contient 'success'\", function () {",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"✓ Réponse contient 'data' avec idCaracteristique\", function () {",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data).to.have.property('idCaracteristique');",
+									"});",
+									"",
+									"pm.test(\"✓ Réponse contient 'message'\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.environment.set(\"idCaracteristiqueCreated\", jsonData.data.idCaracteristique);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenProducteur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomCaracteristique\": \"Couleur\",\n  \"typeValeurCaracteristique\": \"text\",\n  \"uniteValeurCaracteristique\": null\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques"]
+						}
+					}
+				},
+				{
+					"name": "POST - Créer une caractéristique (Gestionnaire)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Caractéristique créée avec succès\", function () {",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"});",
+									"",
+									"pm.environment.set(\"idCaracteristiqueGestation\", jsonData.data.idCaracteristique);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomCaracteristique\": \"Poids moyen\",\n  \"typeValeurCaracteristique\": \"number\",\n  \"uniteValeurCaracteristique\": \"g\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques"]
+						}
+					}
+				},
+				{
+					"name": "PUT - Modifier une caractéristique",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Modification réussie\", function () {",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomCaracteristique\": \"Poids moyen (kg)\",\n  \"typeValeurCaracteristique\": \"number\",\n  \"uniteValeurCaracteristique\": \"kg\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques/{{idCaracteristiqueGestation}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques", "{{idCaracteristiqueGestation}}"]
+						}
+					}
+				},
+				{
+					"name": "DELETE - Supprimer une caractéristique",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    pm.test(\"✓ Réponse 200 OK\", function () {",
+									"        pm.response.to.have.status(200);",
+									"    });",
+									"    ",
+									"    let jsonData = pm.response.json();",
+									"    pm.test(\"✓ Suppression réussie\", function () {",
+									"        pm.expect(jsonData).to.have.property('success');",
+									"        pm.expect(jsonData).to.have.property('message');",
+									"    });",
+									"} else if (pm.response.code === 403) {",
+									"    pm.test(\"✓ Accès refusé (seul gestionnaire peut supprimer)\", function () {",
+									"        pm.response.to.have.status(403);",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques/{{idCaracteristiqueCreated}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques", "{{idCaracteristiqueCreated}}"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🛒 Produits",
+			"item": [
+				{
+					"name": "GET - Obtenir tous les produits",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"✓ Réponse est un array\", function () {",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"});",
+									"",
+									"if (jsonData.length > 0) {",
+									"    pm.test(\"✓ Chaque produit a idProduit\", function () {",
+									"        pm.expect(jsonData[0]).to.have.property('idProduit');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Chaque produit a nomProduit\", function () {",
+									"        pm.expect(jsonData[0]).to.have.property('nomProduit');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Chaque produit a images (array)\", function () {",
+									"        pm.expect(jsonData[0]).to.have.property('images');",
+									"        pm.expect(jsonData[0].images).to.be.an('array');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Chaque produit a caracteristiques (array)\", function () {",
+									"        pm.expect(jsonData[0]).to.have.property('caracteristiques');",
+									"        pm.expect(jsonData[0].caracteristiques).to.be.an('array');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Chaque produit a categorie\", function () {",
+									"        pm.expect(jsonData[0]).to.have.property('categorie');",
+									"    });",
+									"    ",
+									"    pm.environment.set(\"idProduit\", jsonData[0].idProduit);",
+									"}",
+									"",
+									"pm.test(\"✓ Total de produits récupérés: \" + jsonData.length, function () {",
+									"    pm.expect(true).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/produits",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits"]
+						}
+					}
+				},
+				{
+					"name": "GET - Obtenir un produit par ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Produit a idProduit\", function () {",
+									"    pm.expect(jsonData).to.have.property('idProduit');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit a nomProduit\", function () {",
+									"    pm.expect(jsonData).to.have.property('nomProduit');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit a images (array)\", function () {",
+									"    pm.expect(jsonData).to.have.property('images');",
+									"    pm.expect(jsonData.images).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit a caracteristiques (array)\", function () {",
+									"    pm.expect(jsonData).to.have.property('caracteristiques');",
+									"    pm.expect(jsonData.caracteristiques).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit a categorie avec idCategorieProduit\", function () {",
+									"    pm.expect(jsonData).to.have.property('categorie');",
+									"    pm.expect(jsonData.categorie).to.have.property('idCategorieProduit');",
+									"});",
+									"",
+									"if (jsonData.caracteristiques.length > 0) {",
+									"    pm.test(\"✓ Première caractéristique a nomCaracteristique\", function () {",
+									"        pm.expect(jsonData.caracteristiques[0]).to.have.property('nomCaracteristique');",
+									"    });",
+									"    ",
+									"    pm.test(\"✓ Première caractéristique a valuation\", function () {",
+									"        pm.expect(jsonData.caracteristiques[0]).to.have.property('produitcaracteristiques');",
+									"        pm.expect(jsonData.caracteristiques[0].produitcaracteristiques).to.have.property('valeurCaracteristique');",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:5000/api/produits/{{idProduit}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits", "{{idProduit}}"]
+						}
+					}
+				},
+				{
+					"name": "POST - Créer un produit (Fournisseur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Réponse contient 'message'\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});",
+									"",
+									"pm.test(\"✓ Réponse contient 'produit'\", function () {",
+									"    pm.expect(jsonData).to.have.property('produit');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit a idProduit\", function () {",
+									"    pm.expect(jsonData.produit).to.have.property('idProduit');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit a images (array)\", function () {",
+									"    pm.expect(jsonData.produit).to.have.property('images');",
+									"    pm.expect(jsonData.produit.images).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit a caracteristiques (array)\", function () {",
+									"    pm.expect(jsonData.produit).to.have.property('caracteristiques');",
+									"    pm.expect(jsonData.produit.caracteristiques).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"✓ Statut de vérification = waiting_verification (Fournisseur)\", function () {",
+									"    pm.expect(jsonData.produit.statutVerificationProduit).to.equal('waiting_verification');",
+									"});",
+									"",
+									"pm.test(\"✓ Statut de production = finished (Fournisseur)\", function () {",
+									"    pm.expect(jsonData.produit.statutProductionProduit).to.equal('finished');",
+									"});",
+									"",
+									"pm.environment.set(\"idProduitFournisseur\", jsonData.produit.idProduit);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenFournisseur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomProduit\": \"Tomate Bio Premium\",\n  \"descriptionProduit\": \"Tomate bio de haute qualité cultivée en serre écologique\",\n  \"prixClientProduit\": 3.50,\n  \"prixEntrepriseProduit\": 2.50,\n  \"prixFournisseurProduit\": 1.50,\n  \"stockProduit\": 150,\n  \"stockFournisseurProduit\": 300,\n  \"quantiteMinProduitEntreprise\": 20,\n  \"quantiteMinProduitClient\": 1,\n  \"idCategorieProduit\": 1,\n  \"images\": [\n    \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\"\n  ],\n  \"caracteristiquesProduit\": [\n    {\n      \"nomCaracteristique\": \"Origine\",\n      \"typeValeurCaracteristique\": \"text\",\n      \"valeurCaracteristique\": \"Cameroun\"\n    },\n    {\n      \"nomCaracteristique\": \"Poids moyen\",\n      \"typeValeurCaracteristique\": \"number\",\n      \"uniteValeurCaracteristique\": \"g\",\n      \"valeurCaracteristique\": \"200\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits"]
+						}
+					}
+				},
+				{
+					"name": "POST - Créer un produit (Gestionnaire)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Produit créé\", function () {",
+									"    pm.expect(jsonData).to.have.property('produit');",
+									"});",
+									"",
+									"pm.test(\"✓ Statut de vérification = verified (Gestionnaire)\", function () {",
+									"    pm.expect(jsonData.produit.statutVerificationProduit).to.equal('verified');",
+									"});",
+									"",
+									"pm.test(\"✓ Statut de production = finished (Gestionnaire)\", function () {",
+									"    pm.expect(jsonData.produit.statutProductionProduit).to.equal('finished');",
+									"});",
+									"",
+									"pm.environment.set(\"idProduitGestionnaire\", jsonData.produit.idProduit);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomProduit\": \"Laitue Fraîche\",\n  \"descriptionProduit\": \"Laitue fraîche cultivée localement\",\n  \"prixClientProduit\": 1.50,\n  \"prixEntrepriseProduit\": 1.00,\n  \"prixFournisseurProduit\": 0.70,\n  \"stockProduit\": 200,\n  \"idCategorieProduit\": 1,\n  \"caracteristiquesProduit\": [\n    {\n      \"nomCaracteristique\": \"Fraîcheur\",\n      \"typeValeurCaracteristique\": \"text\",\n      \"valeurCaracteristique\": \"Récolte du jour\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits"]
+						}
+					}
+				},
+				{
+					"name": "POST - Créer un produit (Producteur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Statut de vérification = waiting_verification (Producteur)\", function () {",
+									"    pm.expect(jsonData.produit.statutVerificationProduit).to.equal('waiting_verification');",
+									"});",
+									"",
+									"pm.test(\"✓ Statut de production = started (Producteur)\", function () {",
+									"    pm.expect(jsonData.produit.statutProductionProduit).to.equal('started');",
+									"});",
+									"",
+									"pm.environment.set(\"idProduitProducteur\", jsonData.produit.idProduit);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenProducteur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomProduit\": \"Carotte Biologique\",\n  \"descriptionProduit\": \"Carotte cultivée sans pesticides\",\n  \"prixClientProduit\": 2.00,\n  \"prixEntrepriseProduit\": 1.40,\n  \"prixFournisseurProduit\": 0.90,\n  \"stockProduit\": 100,\n  \"idCategorieProduit\": 1,\n  \"caracteristiquesProduit\": [\n    {\n      \"idCaracteristique\": 1,\n      \"valeurCaracteristique\": \"Orange\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits"]
+						}
+					}
+				},
+				{
+					"name": "PUT - Modifier un produit (Fournisseur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Réponse contient 'message'\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('succès');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit modifié\", function () {",
+									"    pm.expect(jsonData).to.have.property('produit');",
+									"});",
+									"",
+									"pm.test(\"✓ Prix modifié correctement\", function () {",
+									"    pm.expect(jsonData.produit.prixClientProduit).to.equal(4.00);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenFournisseur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"prixClientProduit\": 4.00,\n  \"stockProduit\": 180,\n  \"descriptionProduit\": \"Tomate bio de haute qualité cultivée en serre écologique - Édition limitée\",\n  \"caracteristiquesProduit\": [\n    {\n      \"nomCaracteristique\": \"Maturation\",\n      \"typeValeurCaracteristique\": \"text\",\n      \"valeurCaracteristique\": \"Parfaitement mûre\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits/{{idProduitFournisseur}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits", "{{idProduitFournisseur}}"]
+						}
+					}
+				},
+				{
+					"name": "PUT - Ajouter/Modifier images d'un produit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Produit modifié\", function () {",
+									"    pm.expect(jsonData).to.have.property('produit');",
+									"});",
+									"",
+									"pm.test(\"✓ Images mises à jour\", function () {",
+									"    pm.expect(jsonData.produit.images).to.be.an('array');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenFournisseur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"images\": [\n    {\n      \"blobImage\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\",\n      \"estImagePrincipale\": true,\n      \"texteAltImage\": \"Vue principale du produit\"\n    },\n    {\n      \"blobImage\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\",\n      \"texteAltImage\": \"Vue secondaire du produit\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits/{{idProduitFournisseur}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits", "{{idProduitFournisseur}}"]
+						}
+					}
+				},
+				{
+					"name": "DELETE - Supprimer un produit (Fournisseur)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Suppression réussie\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('supprimé');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenFournisseur}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/produits/{{idProduitFournisseur}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits", "{{idProduitFournisseur}}"]
+						}
+					}
+				},
+				{
+					"name": "DELETE - Supprimer un produit (Gestionnaire)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Suppression réussie\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/produits/{{idProduitProducteur}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits", "{{idProduitProducteur}}"]
+						}
+					}
+				},
+				{
+					"name": "POST - Vérifier un produit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Réponse contient 'message'\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('vérifié');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit contient produit\", function () {",
+									"    pm.expect(jsonData).to.have.property('produit');",
+									"});",
+									"",
+									"pm.test(\"✓ Statut de vérification = verified\", function () {",
+									"    pm.expect(jsonData.produit.statutVerificationProduit).to.equal('verified');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/produits/{{idProduitFournisseur}}/verify",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits", "{{idProduitFournisseur}}", "verify"]
+						}
+					}
+				},
+				{
+					"name": "POST - Dévérifier un produit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 200 OK\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let jsonData = pm.response.json();",
+									"",
+									"pm.test(\"✓ Réponse contient 'message'\", function () {",
+									"    pm.expect(jsonData).to.have.property('message');",
+									"    pm.expect(jsonData.message).to.include('dévérifié');",
+									"});",
+									"",
+									"pm.test(\"✓ Produit contient produit\", function () {",
+									"    pm.expect(jsonData).to.have.property('produit');",
+									"});",
+									"",
+									"pm.test(\"✓ Statut de vérification = waiting_verification\", function () {",
+									"    pm.expect(jsonData.produit.statutVerificationProduit).to.equal('waiting_verification');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenGestionnaire}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/produits/{{idProduitFournisseur}}/unverify",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits", "{{idProduitFournisseur}}", "unverify"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🛡️ Tests de Sécurité & Autorisations",
+			"item": [
+				{
+					"name": "❌ POST Produit sans authentification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 401 Unauthorized\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomProduit\": \"Test\",\n  \"idCategorieProduit\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits"]
+						}
+					}
+				},
+				{
+					"name": "❌ POST Caractéristique sans authentification",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 401 Unauthorized\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomCaracteristique\": \"Test\",\n  \"typeValeurCaracteristique\": \"text\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques"]
+						}
+					}
+				},
+				{
+					"name": "❌ DELETE Caractéristique par Producteur (non autorisé)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 403 Forbidden\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenProducteur}}"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:5000/api/caracteristiques/{{idCaracteristique}}",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "caracteristiques", "{{idCaracteristique}}"]
+						}
+					}
+				},
+				{
+					"name": "❌ POST Produit avec catégorie inexistante",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 404 Not Found\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenFournisseur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"nomProduit\": \"Test\",\n  \"idCategorieProduit\": 99999\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits"]
+						}
+					}
+				},
+				{
+					"name": "❌ POST Produit sans nomProduit obligatoire",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"✓ Réponse 400 Bad Request\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tokenFournisseur}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"idCategorieProduit\": 1\n}"
+						},
+						"url": {
+							"raw": "http://localhost:5000/api/produits",
+							"protocol": "http",
+							"host": ["localhost"],
+							"port": "5000",
+							"path": ["api", "produits"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "tokenFournisseur",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenGestionnaire",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tokenProducteur",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idFournisseur",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idGestionnaire",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idProducteur",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idCaracteristique",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idCaracteristiqueCreated",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idCaracteristiqueGestation",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idProduit",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idProduitFournisseur",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idProduitGestionnaire",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idProduitProducteur",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idCategorie",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idCategorieCreated",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "idCategorieGestionnaire",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

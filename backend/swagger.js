@@ -81,7 +81,7 @@ const options = {
           type: "object",
           properties: {
             idAdministrateur: { type: "integer" },
-            niveauAccesAdministrateur: { type: "string" },
+            niveauAccesAdministrateur: { type: "integer" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" }
           }
@@ -99,7 +99,7 @@ const options = {
           type: "object",
           properties: {
             idProducteur: { type: "integer" },
-            specialiteProducteur: { type: "string" },
+            idCategorieProduit: { type: "integer" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" }
           }
@@ -108,10 +108,93 @@ const options = {
           type: "object",
           properties: {
             idLivreur: { type: "integer" },
-            licenceLivreur: { type: "string" },
-            vehiculeLivreur: { type: "string" },
+            createdBy: { type: "integer" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" }
+          }
+        },
+        Caracteristique: {
+          type: "object",
+          properties: {
+            idCaracteristique: { type: "integer" },
+            nomCaracteristique: { type: "string" },
+            typeValeurCaracteristique: { type: "string" },
+            uniteValeurCaracteristique: { type: "string", nullable: true },
+            idFournisseur: { type: "integer", nullable: true },
+            idProducteur: { type: "integer", nullable: true },
+            idGestionnaire: { type: "integer", nullable: true },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" },
+            fournisseur: { $ref: "#/components/schemas/Fournisseur" },
+            producteur: { $ref: "#/components/schemas/Producteur" },
+            gestionnaire: { $ref: "#/components/schemas/Gestionnaire" }
+          }
+        },
+        ProduitCaracteristiqueAssociation: {
+          type: "object",
+          properties: {
+            idCaracteristique: { type: "integer" },
+            nomCaracteristique: { type: "string" },
+            typeValeurCaracteristique: { type: "string" },
+            uniteValeurCaracteristique: { type: "string", nullable: true },
+            produitcaracteristiques: {
+              type: "object",
+              properties: {
+                valeurCaracteristique: { type: "string", nullable: true }
+              }
+            }
+          }
+        },
+        ProduitImage: {
+          type: "object",
+          properties: {
+            idProduitImage: { type: "integer" },
+            blobImage: { type: "string", format: "binary" },
+            estImagePrincipale: { type: "boolean" },
+            texteAltImage: { type: "string", nullable: true },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" }
+          }
+        },
+        Produit: {
+          type: "object",
+          properties: {
+            idProduit: { type: "integer" },
+            nomProduit: { type: "string" },
+            descriptionProduit: { type: "string", nullable: true },
+            prixFournisseurClientProduit: { type: "integer", nullable: true },
+            prixFournisseurEntrepriseProduit: { type: "integer", nullable: true },
+            prixFournisseurProduit: { type: "number", nullable: true },
+            comissionClientProduit: { type: "integer", nullable: true },
+            comissionEntrepriseProduit: { type: "integer", nullable: true },
+            stockProduit: { type: "integer" },
+            stockFournisseurProduit: { type: "integer" },
+            quantiteMinProduitEntreprise: { type: "integer", nullable: true },
+            quantiteMinProduitClient: { type: "integer", nullable: true },
+            statutVerificationProduit: { type: "string" },
+            statutProductionProduit: { type: "string" },
+            idCategorieProduit: { type: "integer" },
+            idFournisseur: { type: "integer", nullable: true },
+            idGestionnaire: { type: "integer", nullable: true },
+            categorie: { $ref: "#/components/schemas/CategorieProduit" },
+            images: {
+              type: "array",
+              items: { $ref: "#/components/schemas/ProduitImage" }
+            },
+            caracteristiques: {
+              type: "array",
+              items: { $ref: "#/components/schemas/ProduitCaracteristiqueAssociation" }
+            },
+            createdAt: { type: "string", format: "date-time" },
+            updatedAt: { type: "string", format: "date-time" }
+          }
+        },
+        CategorieProduit: {
+          type: "object",
+          properties: {
+            idCategorieProduit: { type: "integer" },
+            nomCategorie: { type: "string" },
+            descriptionCategorie: { type: "string", nullable: true }
           }
         },
         AuthResponse: {

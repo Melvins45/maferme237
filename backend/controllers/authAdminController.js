@@ -9,19 +9,7 @@ const {
 const bcrypt = require("bcrypt");
 const { signUser, verifyToken } = require("../services/jwtService");
 const { formatAuthResponse } = require("../services/responseFormatter");
-
-const extractBearer = (req) => {
-  const auth = req.headers.authorization || req.headers.Authorization;
-  if (!auth) return null;
-  const parts = auth.split(" ");
-  if (parts.length !== 2) return null;
-  return parts[1];
-};
-
-const ensureRoles = (payload, allowedRoles) => {
-  if (!payload || !payload.roles) return false;
-  return payload.roles.some((r) => allowedRoles.includes(r));
-};
+const { extractBearer, ensureRoles } = require("../utils/tokenUtils");
 
 exports.createAdministrateur = async (req, res) => {
   try {

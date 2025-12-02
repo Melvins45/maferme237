@@ -6,6 +6,15 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class Caracteristiques extends Model {
     static associate(models) {
+      this.belongsTo(models.Fournisseurs, { foreignKey: 'idFournisseur' });
+      this.belongsTo(models.Producteurs, { foreignKey: 'idProducteur' });
+      this.belongsTo(models.Gestionnaires, { foreignKey: 'idGestionnaire' });
+      this.belongsToMany(models.Produits, { 
+        through: models.ProduitCaracteristiques, 
+        foreignKey: 'idCaracteristique', 
+        otherKey: 'idProduit',
+        as: 'produits'
+      });
     }
   }
   Caracteristiques.init({
@@ -24,6 +33,18 @@ module.exports = (sequelize, DataTypes) => {
     },
     uniteValeurCaracteristique: {
       type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    idFournisseur: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    idProducteur: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    idGestionnaire: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     createdAt: {

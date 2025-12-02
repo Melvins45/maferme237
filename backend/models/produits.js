@@ -15,6 +15,12 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.Plannificationetapeproductions, { foreignKey: 'idProduit' });
       // In models/plannificationetapeproductions.js consider: this.belongsTo(models.Produits, { foreignKey: 'idProduit' });
       this.hasMany(models.ProduitImages, { foreignKey: 'idProduit', as: 'images' });
+      this.belongsToMany(models.Caracteristiques, { 
+        through: models.ProduitCaracteristiques, 
+        foreignKey: 'idProduit', 
+        otherKey: 'idCaracteristique',
+        as: 'caracteristiques'
+      });
     }
   }
   Produits.init({
@@ -31,16 +37,24 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    prixClientProduit: {
-      type: DataTypes.FLOAT,
+    prixFournisseurClientProduit: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
-    prixEntrepriseProduit: {
-      type: DataTypes.FLOAT,
+    prixFournisseurEntrepriseProduit: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     prixFournisseurProduit: {
       type: DataTypes.FLOAT,
+      allowNull: true
+    },
+    comissionClientProduit: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    comissionEntrepriseProduit: {
+      type: DataTypes.INTEGER,
       allowNull: true
     },
     stockProduit: {

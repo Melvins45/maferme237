@@ -12,9 +12,14 @@ const gestionnaireRoutes = require("./routes/gestionnaireRoutes");
 const producteurRoutes = require("./routes/producteurRoutes");
 const livreurRoutes = require("./routes/livreurRoutes");
 const produitRoutes = require("./routes/produitRoutes");
+const caracteristiquesRoutes = require("./routes/caracteristiquesRoutes");
+const categoriesRoutes = require("./routes/categoriesRoutes");
+const requestLogger = require("./middlewares/requestLogger");
 const { swaggerUi, specs } = require("./swagger");
 
 app.use(express.json());
+app.use(requestLogger);
+
 app.use("/api/fournisseurs", fournisseurRoutes);
 app.use("/api/entreprises", entreprisesRoutes);
 app.use("/api/clients", clientRoutes);
@@ -23,6 +28,8 @@ app.use("/api/gestionnaires", gestionnaireRoutes);
 app.use("/api/producteurs", producteurRoutes);
 app.use("/api/livreurs", livreurRoutes);
 app.use("/api/produits", produitRoutes);
+app.use("/api/caracteristiques", caracteristiquesRoutes);
+app.use("/api/categories", categoriesRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", authAdminRoutes);
 

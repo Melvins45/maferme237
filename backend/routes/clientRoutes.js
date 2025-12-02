@@ -15,13 +15,13 @@ const authenticate = require("../middlewares/auth");
  * @swagger
  * /clients:
  *   get:
- *     summary: Get all clients with their person data
+ *     summary: Obtenir tous les clients avec leurs données personnelles
  *     tags: [Clients]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all clients with person information
+ *         description: Liste de tous les clients avec les informations personnelles
  *         content:
  *           application/json:
  *             schema:
@@ -32,11 +32,11 @@ const authenticate = require("../middlewares/auth");
  *                   personne: { $ref: '#/components/schemas/PersonnePublic' }
  *                   client: { $ref: '#/components/schemas/Client' }
  *       401:
- *         description: Token manquant or invalid
+ *         description: Token manquant ou invalide
  *       403:
  *         description: Accès refusé - rôle gestionnaire ou administrateur requis
  *       500:
- *         description: Server error
+ *         description: Erreur serveur
  */
 router.get("/", clientController.getClients);
 
@@ -44,7 +44,7 @@ router.get("/", clientController.getClients);
  * @swagger
  * /clients/{idClient}:
  *   get:
- *     summary: Get a single client by ID with person data
+ *     summary: Obtenir un client spécifique par son ID avec ses données personnelles
  *     tags: [Clients]
  *     security:
  *       - bearerAuth: []
@@ -56,7 +56,7 @@ router.get("/", clientController.getClients);
  *           type: integer
  *     responses:
  *       200:
- *         description: Client found with person information
+ *         description: Client trouvé avec ses informations personnelles
  *         content:
  *           application/json:
  *             schema:
@@ -65,15 +65,15 @@ router.get("/", clientController.getClients);
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
  *                 client: { $ref: '#/components/schemas/Client' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Paramètre idClient manquant
  *       401:
- *         description: Token manquant or invalid
+ *         description: Token manquant ou invalide
  *       403:
  *         description: Accès refusé - gestionnaire ou administrateur requis
  *       404:
- *         description: Client not found
+ *         description: Client non trouvé
  *       500:
- *         description: Server error
+ *         description: Erreur serveur
  */
 router.get("/:idClient", clientController.getClient);
 
@@ -81,7 +81,7 @@ router.get("/:idClient", clientController.getClient);
  * @swagger
  * /clients/{idClient}:
  *   put:
- *     summary: Update a client
+ *     summary: Modifier un client
  *     tags: [Clients]
  *     security:
  *       - bearerAuth: []
@@ -100,23 +100,23 @@ router.get("/:idClient", clientController.getClient);
  *             properties:
  *               nomPersonne:
  *                 type: string
- *                 description: Person's first name
+ *                 description: Nom de la personne
  *               prenomPersonne:
  *                 type: string
- *                 description: Person's last name
+ *                 description: Prénom de la personne
  *               telephonePersonne:
  *                 type: string
- *                 description: Person's phone number
+ *                 description: Numéro de téléphone
  *               emailPersonne:
  *                 type: string
  *                 format: email
- *                 description: Person's email
+ *                 description: Adresse email
  *               adresseClient:
  *                 type: string
- *                 description: Client's address
+ *                 description: Adresse du client
  *     responses:
  *       200:
- *         description: Client updated successfully
+ *         description: Client modifié avec succès
  *         content:
  *           application/json:
  *             schema:
@@ -125,21 +125,17 @@ router.get("/:idClient", clientController.getClient);
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
  *                 client: { $ref: '#/components/schemas/Client' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Paramètre idClient manquant
  *       401:
- *         description: Token manquant or invalid
+ *         description: Token manquant ou invalide
  *       403:
- *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
+ *         description: Accès refusé - autorisé si l'ID correspond ou utilisateur est gestionnaire/administrateur
  *       404:
- *         description: Client not found
+ *         description: Client non trouvé
  *       500:
- *         description: Server error
- */
-/**
- * @swagger
- * /clients/{idClient}:
+ *         description: Erreur serveur
  *   delete:
- *     summary: Delete a client
+ *     summary: Supprimer un client
  *     tags: [Clients]
  *     security:
  *       - bearerAuth: []
@@ -151,21 +147,21 @@ router.get("/:idClient", clientController.getClient);
  *           type: integer
  *     responses:
  *       200:
- *         description: Client deleted successfully
+ *         description: Client supprimé avec succès
  *       400:
- *         description: Missing idClient parameter
+ *         description: Paramètre idClient manquant
  *       401:
- *         description: Token manquant or invalid
+ *         description: Token manquant ou invalide
  *       403:
- *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
+ *         description: Accès refusé - autorisé si l'ID correspond ou utilisateur est gestionnaire/administrateur
  *       404:
- *         description: Client not found
+ *         description: Client non trouvé
  *       500:
- *         description: Server error
+ *         description: Erreur serveur
  */
 router.put("/:idClient", clientController.updateClient);
 router.delete("/:idClient", authenticate, clientController.deleteClient);
 
-// Register and login are handled by authRoutes.js (/api/auth/clients/register and /api/auth/login)
+// L'enregistrement et la connexion sont gérés par authRoutes.js (/api/auth/clients/register et /api/auth/login)
 
 module.exports = router;

@@ -1,0 +1,557 @@
+{
+	"info": {
+		"_postman_id": "e53feb2e-858e-429a-9acf-d6058fecf456",
+		"name": "maferme237",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "22986726"
+	},
+	"item": [
+		{
+			"name": "Clients",
+			"item": [
+				{
+					"name": "Post Clients Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Récupérer la réponse JSON\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Vérifier que le token existe\r",
+									"pm.test(\"Token reçu\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									"// Sauvegarder le token dans l'environnement Postman\r",
+									"pm.environment.set(\"authTokenCLient\", jsonData.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"emailPersonne\": \"us2222er@example.com\",\r\n  \"motDePassePersonne\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Clients Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"personne\": {\r\n    \"nomPersonne\": \"string\",\r\n    \"prenomPersonne\": \"string\",\r\n    \"emailPersonne\": \"us2222er@example.com\",\r\n    \"motDePassePersonne\": \"string\",\r\n    \"telephonePersonne\": \"string\"\r\n  },\r\n  \"client\": {\r\n    \"adresseClient\": \"string\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/clients/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Clients All",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "http://localhost:5000/api/clients/"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Fournisseurs",
+			"item": [
+				{
+					"name": "Post Fournisseurs Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"personne\": {\r\n    \"nomPersonne\": \"string\",\r\n    \"prenomPersonne\": \"string\",\r\n    \"emailPersonne\": \"user5@example.com\",\r\n    \"motDePassePersonne\": \"string\",\r\n    \"telephonePersonne\": \"string\"\r\n  },\r\n  \"fournisseur\": {\r\n    \"noteClientFournisseur\": 0,\r\n    \"noteEntrepriseFournisseur\": 0,\r\n    \"verifieFournisseur\": true,\r\n    \"historiqueProduits\": 0\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/fournisseurs/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Fournisseurs Verify",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authTokenAdministrateur}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/fournisseurs/7/verify"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Fournisseurs Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Récupérer la réponse JSON\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Vérifier que le token existe\r",
+									"pm.test(\"Token reçu\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									"// Sauvegarder le token dans l'environnement Postman\r",
+									"pm.environment.set(\"authTokenFournisseur\", jsonData.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"emailPersonne\": \"user5@example.com\",\r\n  \"motDePassePersonne\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/auth/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Entreprises",
+			"item": [
+				{
+					"name": "Post Entreprises Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"personne\": {\r\n    \"nomPersonne\": \"string\",\r\n    \"prenomPersonne\": \"string\",\r\n    \"emailPersonne\": \"user10@example.com\",\r\n    \"motDePassePersonne\": \"string\",\r\n    \"telephonePersonne\": \"string\"\r\n  },\r\n  \"entreprise\": {\r\n    \"secteurActiviteEntreprise\": \"string\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/entreprises/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Entreprises Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Récupérer la réponse JSON\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Vérifier que le token existe\r",
+									"pm.test(\"Token reçu\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									"// Sauvegarder le token dans l'environnement Postman\r",
+									"pm.environment.set(\"authTokenEntreprise\", jsonData.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"emailPersonne\": \"user10@example.com\",\r\n  \"motDePassePersonne\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/auth/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Administrateurs",
+			"item": [
+				{
+					"name": "Post Administrateurs Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authTokenAdministrateur}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"personne\": {\r\n    \"nomPersonne\": \"string\",\r\n    \"prenomPersonne\": \"string\",\r\n    \"emailPersonne\": \"root@example.com\",\r\n    \"motDePassePersonne\": \"maferme237Douala@2025\",\r\n    \"telephonePersonne\": \"string\"\r\n  },\r\n  \"administrateur\": {\r\n    \"niveauAccesAdministrateur\": 2\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/administrateurs/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Administrateurs Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Récupérer la réponse JSON\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Vérifier que le token existe\r",
+									"pm.test(\"Token reçu\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									"// Sauvegarder le token dans l'environnement Postman\r",
+									"pm.environment.set(\"authTokenAdministrateur\", jsonData.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authTokenAdministrateur}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"emailPersonne\": \"nitopopm@yahoo.com\",\r\n  \"motDePassePersonne\": \"maferme237Douala@2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gestionnaires",
+			"item": [
+				{
+					"name": "Post Gestionnaires Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authTokenAdministrateur}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"personne\": {\r\n    \"nomPersonne\": \"string\",\r\n    \"prenomPersonne\": \"string\",\r\n    \"emailPersonne\": \"manager@maferme237.com\",\r\n    \"motDePassePersonne\": \"maferme237Douala@2025\",\r\n    \"telephonePersonne\": \"string\"\r\n  },\r\n  \"gestionnaire\": {\r\n    \"roleGestionnaire\": \"string\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/gestionnaires/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Gestionnaires Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Récupérer la réponse JSON\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Vérifier que le token existe\r",
+									"pm.test(\"Token reçu\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									"// Sauvegarder le token dans l'environnement Postman\r",
+									"pm.environment.set(\"authTokenGestionnaire\", jsonData.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"emailPersonne\": \"manager@maferme237.com\",\r\n  \"motDePassePersonne\": \"maferme237Douala@2025\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Producteurs",
+			"item": [
+				{
+					"name": "Post Producteurs Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authTokenAdministrateur}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"personne\": {\r\n    \"nomPersonne\": \"string\",\r\n    \"prenomPersonne\": \"string\",\r\n    \"emailPersonne\": \"producer@maferme237.com\",\r\n    \"motDePassePersonne\": \"string\",\r\n    \"telephonePersonne\": \"string\"\r\n  },\r\n  \"producteur\": {\r\n    \"specialiteProducteur\": \"string\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/producteurs/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Producteurs Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Récupérer la réponse JSON\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Vérifier que le token existe\r",
+									"pm.test(\"Token reçu\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									"// Sauvegarder le token dans l'environnement Postman\r",
+									"pm.environment.set(\"authTokenProducteur\", jsonData.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"emailPersonne\": \"producer@maferme237.com\",\r\n  \"motDePassePersonne\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Livreurs",
+			"item": [
+				{
+					"name": "Post Livreurs Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authTokenAdministrateur}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"personne\": {\r\n    \"nomPersonne\": \"string\",\r\n    \"prenomPersonne\": \"string\",\r\n    \"emailPersonne\": \"livreur@maferme237.com\",\r\n    \"motDePassePersonne\": \"string\",\r\n    \"telephonePersonne\": \"string\"\r\n  }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/livreurs/register"
+					},
+					"response": []
+				},
+				{
+					"name": "Post Livreurs Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Récupérer la réponse JSON\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"// Vérifier que le token existe\r",
+									"pm.test(\"Token reçu\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"token\");\r",
+									"});\r",
+									"\r",
+									"// Sauvegarder le token dans l'environnement Postman\r",
+									"pm.environment.set(\"authTokenLivreur\", jsonData.token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"emailPersonne\": \"livreur@maferme237.com\",\r\n  \"motDePassePersonne\": \"string\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "http://localhost:5000/api/admin/login"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Post Persons Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Récupérer la réponse JSON\r",
+							"let jsonData = pm.response.json();\r",
+							"\r",
+							"// Vérifier que le token existe\r",
+							"pm.test(\"Token reçu\", function () {\r",
+							"    pm.expect(jsonData).to.have.property(\"token\");\r",
+							"});\r",
+							"\r",
+							"// Sauvegarder le token dans l'environnement Postman\r",
+							"pm.environment.set(\"authToken\", jsonData.token);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"emailPersonne\": \"us2222er@example.com\",\r\n  \"motDePassePersonne\": \"string\"\r\n}"
+				},
+				"url": "http://localhost:5000/api/login"
+			},
+			"response": []
+		}
+	]
+}
