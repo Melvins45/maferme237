@@ -1,27 +1,27 @@
-// routes/clientRoutes.js
+// routes/gestionnaireRoutes.js
 const express = require("express");
 const router = express.Router();
-const clientController = require("../controllers/clientController");
+const gestionnaireController = require("../controllers/gestionnaireController");
 const authenticate = require("../middlewares/auth");
 
 /**
  * @swagger
  * tags:
- *   name: Clients
- *   description: Gestion des clients
+ *   name: Gestionnaires
+ *   description: Gestion des gestionnaires (secure)
  */
 
 /**
  * @swagger
- * /clients:
+ * /gestionnaires:
  *   get:
- *     summary: Get all clients with their person data
- *     tags: [Clients]
+ *     summary: Get all gestionnaires with their person data
+ *     tags: [Gestionnaires]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all clients with person information
+ *         description: List of gestionnaires - administrateurs see all, gestionnaires see only themselves
  *         content:
  *           application/json:
  *             schema:
@@ -30,64 +30,58 @@ const authenticate = require("../middlewares/auth");
  *                 type: object
  *                 properties:
  *                   personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                   client: { $ref: '#/components/schemas/Client' }
+ *                   gestionnaire: { $ref: '#/components/schemas/Gestionnaire' }
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - rôle gestionnaire ou administrateur requis
+ *         description: Accès refusé - administrateur ou gestionnaire requis
  *       500:
  *         description: Server error
  */
-router.get("/", clientController.getClients);
+router.get("/", gestionnaireController.getGestionnaires);
 
 /**
  * @swagger
- * /clients/{idClient}:
+ * /gestionnaires/{idGestionnaire}:
  *   get:
- *     summary: Get a single client by ID with person data
- *     tags: [Clients]
+ *     summary: Get a single gestionnaire by ID with person data
+ *     tags: [Gestionnaires]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idGestionnaire
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Client found with person information
+ *         description: Gestionnaire found with person information
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                 client: { $ref: '#/components/schemas/Client' }
+ *                 gestionnaire: { $ref: '#/components/schemas/Gestionnaire' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idGestionnaire parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - gestionnaire ou administrateur requis
+ *         description: Accès refusé - allowed if ID matches or caller is administrateur
  *       404:
- *         description: Client not found
+ *         description: Gestionnaire not found
  *       500:
  *         description: Server error
- */
-router.get("/:idClient", clientController.getClient);
-
-/**
- * @swagger
- * /clients/{idClient}:
  *   put:
- *     summary: Update a client
- *     tags: [Clients]
+ *     summary: Update a gestionnaire
+ *     tags: [Gestionnaires]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idGestionnaire
  *         required: true
  *         schema:
  *           type: integer
@@ -111,61 +105,56 @@ router.get("/:idClient", clientController.getClient);
  *                 type: string
  *                 format: email
  *                 description: Person's email
- *               adresseClient:
+ *               roleGestionnaire:
  *                 type: string
- *                 description: Client's address
+ *                 description: Gestionnaire role
  *     responses:
  *       200:
- *         description: Client updated successfully
+ *         description: Gestionnaire successfully updated
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                 client: { $ref: '#/components/schemas/Client' }
+ *                 gestionnaire: { $ref: '#/components/schemas/Gestionnaire' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idGestionnaire parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
+ *         description: Accès refusé - allowed if ID matches or caller is administrateur
  *       404:
- *         description: Client not found
+ *         description: Gestionnaire not found
  *       500:
  *         description: Server error
- */
-/**
- * @swagger
- * /clients/{idClient}:
  *   delete:
- *     summary: Delete a client
- *     tags: [Clients]
+ *     summary: Delete a gestionnaire
+ *     tags: [Gestionnaires]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idGestionnaire
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Client deleted successfully
+ *         description: Gestionnaire deleted successfully
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idGestionnaire parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
+ *         description: Accès refusé - only administrateur can delete gestionnaires
  *       404:
- *         description: Client not found
+ *         description: Gestionnaire not found
  *       500:
  *         description: Server error
  */
-router.put("/:idClient", clientController.updateClient);
-router.delete("/:idClient", authenticate, clientController.deleteClient);
-
-// Register and login are handled by authRoutes.js (/api/auth/clients/register and /api/auth/login)
+router.get("/:idGestionnaire", gestionnaireController.getGestionnaire);
+router.put("/:idGestionnaire", gestionnaireController.updateGestionnaire);
+router.delete("/:idGestionnaire", authenticate, gestionnaireController.deleteGestionnaire);
 
 module.exports = router;

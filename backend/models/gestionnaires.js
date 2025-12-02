@@ -19,6 +19,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(255),
       allowNull: true
     },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'personnes',
+        key: 'idPersonne'
+      }
+    },
     createdAt: {
       type: DataTypes.DATE,
       allowNull: false,

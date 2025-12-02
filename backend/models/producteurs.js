@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       this.belongsTo(models.Personnes, { foreignKey: 'idProducteur' });
       // In models/personnes.js consider: this.hasMany(models.Producteurs, { foreignKey: 'idProducteur' });
+      this.belongsTo(models.CategorieProduits, { foreignKey: 'idCategorieProduit', as: 'categorie' });
     }
   }
   Producteurs.init({
@@ -15,9 +16,21 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       primaryKey: true,
     },
-    specialiteProducteur: {
-      type: DataTypes.STRING(255),
-      allowNull: true
+    idCategorieProduit: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'CategorieProduits',
+        key: 'idCategorieProduit'
+      }
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'personnes',
+        key: 'idPersonne'
+      }
     },
     createdAt: {
       type: DataTypes.DATE,

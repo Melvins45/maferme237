@@ -1,27 +1,27 @@
-// routes/clientRoutes.js
+// routes/administrateurRoutes.js
 const express = require("express");
 const router = express.Router();
-const clientController = require("../controllers/clientController");
+const administrateurController = require("../controllers/administrateurController");
 const authenticate = require("../middlewares/auth");
 
 /**
  * @swagger
  * tags:
- *   name: Clients
- *   description: Gestion des clients
+ *   name: Administrateurs
+ *   description: Gestion des administrateurs (secure)
  */
 
 /**
  * @swagger
- * /clients:
+ * /administrateurs:
  *   get:
- *     summary: Get all clients with their person data
- *     tags: [Clients]
+ *     summary: Get all administrateurs with their person data
+ *     tags: [Administrateurs]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all clients with person information
+ *         description: List of administrateurs visible to caller (based on level)
  *         content:
  *           application/json:
  *             schema:
@@ -30,64 +30,64 @@ const authenticate = require("../middlewares/auth");
  *                 type: object
  *                 properties:
  *                   personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                   client: { $ref: '#/components/schemas/Client' }
+ *                   administrateur: { $ref: '#/components/schemas/Administrateur' }
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - rôle gestionnaire ou administrateur requis
+ *         description: Accès refusé - administrateur requis
  *       500:
  *         description: Server error
  */
-router.get("/", clientController.getClients);
+router.get("/", administrateurController.getAdministrateurs);
 
 /**
  * @swagger
- * /clients/{idClient}:
+ * /administrateurs/{idAdministrateur}:
  *   get:
- *     summary: Get a single client by ID with person data
- *     tags: [Clients]
+ *     summary: Get a single administrateur by ID with person data
+ *     tags: [Administrateurs]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idAdministrateur
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Client found with person information
+ *         description: Administrateur found with person information
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                 client: { $ref: '#/components/schemas/Client' }
+ *                 administrateur: { $ref: '#/components/schemas/Administrateur' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idAdministrateur parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - gestionnaire ou administrateur requis
+ *         description: Accès refusé - allowed if ID matches or caller has superior level
  *       404:
- *         description: Client not found
+ *         description: Administrateur not found
  *       500:
  *         description: Server error
  */
-router.get("/:idClient", clientController.getClient);
+router.get("/:idAdministrateur", administrateurController.getAdministrateur);
 
 /**
  * @swagger
- * /clients/{idClient}:
+ * /administrateurs/{idAdministrateur}:
  *   put:
- *     summary: Update a client
- *     tags: [Clients]
+ *     summary: Update an administrateur
+ *     tags: [Administrateurs]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idAdministrateur
  *         required: true
  *         schema:
  *           type: integer
@@ -111,61 +111,59 @@ router.get("/:idClient", clientController.getClient);
  *                 type: string
  *                 format: email
  *                 description: Person's email
- *               adresseClient:
- *                 type: string
- *                 description: Client's address
+ *               niveauAccesAdministrateur:
+ *                 type: integer
+ *                 description: Admin access level (higher number = more permissions)
  *     responses:
  *       200:
- *         description: Client updated successfully
+ *         description: Administrateur updated successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                 client: { $ref: '#/components/schemas/Client' }
+ *                 administrateur: { $ref: '#/components/schemas/Administrateur' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idAdministrateur parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
+ *         description: Accès refusé - allowed if ID matches or caller has strict superior level
  *       404:
- *         description: Client not found
+ *         description: Administrateur not found
  *       500:
  *         description: Server error
  */
 /**
  * @swagger
- * /clients/{idClient}:
+ * /administrateurs/{idAdministrateur}:
  *   delete:
- *     summary: Delete a client
- *     tags: [Clients]
+ *     summary: Delete an administrateur
+ *     tags: [Administrateurs]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idAdministrateur
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Client deleted successfully
+ *         description: Administrateur deleted successfully
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idAdministrateur parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
- *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
+ *         description: Accès refusé - cannot delete self unless level 1, or caller has strict superior level
  *       404:
- *         description: Client not found
+ *         description: Administrateur not found
  *       500:
  *         description: Server error
  */
-router.put("/:idClient", clientController.updateClient);
-router.delete("/:idClient", authenticate, clientController.deleteClient);
-
-// Register and login are handled by authRoutes.js (/api/auth/clients/register and /api/auth/login)
+router.put("/:idAdministrateur", administrateurController.updateAdministrateur);
+router.delete("/:idAdministrateur", authenticate, administrateurController.deleteAdministrateur);
 
 module.exports = router;

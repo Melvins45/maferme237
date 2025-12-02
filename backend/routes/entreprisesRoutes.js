@@ -1,27 +1,27 @@
-// routes/clientRoutes.js
+// routes/entreprisesRoutes.js
 const express = require("express");
 const router = express.Router();
-const clientController = require("../controllers/clientController");
+const entrepriseController = require("../controllers/entrepriseController");
 const authenticate = require("../middlewares/auth");
 
 /**
  * @swagger
  * tags:
- *   name: Clients
- *   description: Gestion des clients
+ *   name: Entreprises
+ *   description: Gestion des entreprises
  */
 
 /**
  * @swagger
- * /clients:
+ * /entreprises:
  *   get:
- *     summary: Get all clients with their person data
- *     tags: [Clients]
+ *     summary: Get all enterprises with their person data
+ *     tags: [Entreprises]
  *     security:
  *       - bearerAuth: []
  *     responses:
  *       200:
- *         description: List of all clients with person information
+ *         description: List of all enterprises with person information
  *         content:
  *           application/json:
  *             schema:
@@ -30,7 +30,7 @@ const authenticate = require("../middlewares/auth");
  *                 type: object
  *                 properties:
  *                   personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                   client: { $ref: '#/components/schemas/Client' }
+ *                   entreprise: { $ref: '#/components/schemas/Entreprise' }
  *       401:
  *         description: Token manquant or invalid
  *       403:
@@ -38,56 +38,56 @@ const authenticate = require("../middlewares/auth");
  *       500:
  *         description: Server error
  */
-router.get("/", clientController.getClients);
+router.get("/", entrepriseController.getEntreprises);
 
 /**
  * @swagger
- * /clients/{idClient}:
+ * /entreprises/{idEntreprise}:
  *   get:
- *     summary: Get a single client by ID with person data
- *     tags: [Clients]
+ *     summary: Get a single enterprise by ID with person data
+ *     tags: [Entreprises]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idEntreprise
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Client found with person information
+ *         description: Enterprise found with person information
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                 client: { $ref: '#/components/schemas/Client' }
+ *                 entreprise: { $ref: '#/components/schemas/Entreprise' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idEntreprise parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
  *         description: Accès refusé - gestionnaire ou administrateur requis
  *       404:
- *         description: Client not found
+ *         description: Enterprise not found
  *       500:
  *         description: Server error
  */
-router.get("/:idClient", clientController.getClient);
+router.get("/:idEntreprise", entrepriseController.getEntreprise);
 
 /**
  * @swagger
- * /clients/{idClient}:
+ * /entreprises/{idEntreprise}:
  *   put:
- *     summary: Update a client
- *     tags: [Clients]
+ *     summary: Update an enterprise
+ *     tags: [Entreprises]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idEntreprise
  *         required: true
  *         schema:
  *           type: integer
@@ -111,61 +111,62 @@ router.get("/:idClient", clientController.getClient);
  *                 type: string
  *                 format: email
  *                 description: Person's email
- *               adresseClient:
+ *               secteurActiviteEntreprise:
  *                 type: string
- *                 description: Client's address
+ *                 description: Business sector
  *     responses:
  *       200:
- *         description: Client updated successfully
+ *         description: Enterprise updated successfully
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
  *                 personne: { $ref: '#/components/schemas/PersonnePublic' }
- *                 client: { $ref: '#/components/schemas/Client' }
+ *                 entreprise: { $ref: '#/components/schemas/Entreprise' }
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idEntreprise parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
  *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
  *       404:
- *         description: Client not found
+ *         description: Enterprise not found
  *       500:
  *         description: Server error
  */
 /**
  * @swagger
- * /clients/{idClient}:
+ * /entreprises/{idEntreprise}:
  *   delete:
- *     summary: Delete a client
- *     tags: [Clients]
+ *     summary: Delete an entreprise
+ *     tags: [Entreprises]
  *     security:
  *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: idClient
+ *         name: idEntreprise
  *         required: true
  *         schema:
  *           type: integer
  *     responses:
  *       200:
- *         description: Client deleted successfully
+ *         description: Entreprise deleted successfully
  *       400:
- *         description: Missing idClient parameter
+ *         description: Missing idEntreprise parameter
  *       401:
  *         description: Token manquant or invalid
  *       403:
  *         description: Accès refusé - allowed if ID matches or user is gestionnaire/administrateur
  *       404:
- *         description: Client not found
+ *         description: Entreprise not found
  *       500:
  *         description: Server error
  */
-router.put("/:idClient", clientController.updateClient);
-router.delete("/:idClient", authenticate, clientController.deleteClient);
+router.put("/:idEntreprise", entrepriseController.updateEntreprise);
+router.delete("/:idEntreprise", authenticate, entrepriseController.deleteEntreprise);
 
-// Register and login are handled by authRoutes.js (/api/auth/clients/register and /api/auth/login)
+// Register and login are handled by authRoutes.js (/api/auth/entreprises/register and /api/auth/login)
 
 module.exports = router;
+

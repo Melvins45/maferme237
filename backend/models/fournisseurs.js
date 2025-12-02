@@ -27,6 +27,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: true
     },
+    verifiedBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'personnes',
+        key: 'idPersonne'
+      }
+    },
     historiqueProduits: {
       type: DataTypes.INTEGER,
       allowNull: true

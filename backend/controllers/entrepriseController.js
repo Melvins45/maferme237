@@ -1,5 +1,5 @@
-// controllers/clientController.js
-const { Clients, Personnes } = require("../models");
+// controllers/entrepriseController.js
+const { Entreprises, Personnes } = require("../models");
 const { verifyToken } = require("../services/jwtService");
 
 const extractBearer = (req) => {
@@ -16,10 +16,10 @@ const ensureRoles = (payload, allowedRoles) => {
 };
 
 /**
- * Get all clients with their person data
+ * Get all enterprises with their person data
  * Only gestionnaires and administrateurs can access
  */
-exports.getClients = async (req, res) => {
+exports.getEntreprises = async (req, res) => {
   try {
     const token = extractBearer(req);
     if (!token) return res.status(401).json({ error: "Token manquant" });
@@ -30,12 +30,12 @@ exports.getClients = async (req, res) => {
       return res.status(401).json({ error: "Token invalide" });
     }
 
-    // Only gestionnaire or administrateur can access all clients
+    // Only gestionnaire or administrateur can access all enterprises
     if (!ensureRoles(caller, ["gestionnaire", "administrateur"])) {
       return res.status(403).json({ error: "Accès refusé : rôle gestionnaire ou administrateur requis" });
     }
 
-    const clients = await Clients.findAll({
+    const entreprises = await Entreprises.findAll({
       include: [
         {
           model: Personnes,
@@ -44,14 +44,14 @@ exports.getClients = async (req, res) => {
       ]
     });
 
-    const response = clients.map(c => {
-      const personneData = c.Personne.toJSON();
+    const response = entreprises.map(e => {
+      const personneData = e.Personne.toJSON();
       delete personneData.motDePassePersonne;
-      const clientData = c.toJSON();
-      delete clientData.Personne;
+      const entrepriseData = e.toJSON();
+      delete entrepriseData.Personne;
       return {
         personne: personneData,
-        client: clientData
+        entreprise: entrepriseData
       };
     });
 
@@ -62,10 +62,10 @@ exports.getClients = async (req, res) => {
 };
 
 /**
- * Get a single client by ID with person data
+ * Get a single enterprise by ID with person data
  * Only gestionnaires and administrateurs can access
  */
-exports.getClient = async (req, res) => {
+exports.getEntreprise = async (req, res) => {
   try {
     const token = extractBearer(req);
     if (!token) return res.status(401).json({ error: "Token manquant" });
@@ -81,13 +81,13 @@ exports.getClient = async (req, res) => {
       return res.status(403).json({ error: "Accès refusé : rôle gestionnaire ou administrateur requis" });
     }
 
-    const { idClient } = req.params;
-    if (!idClient) {
-      return res.status(400).json({ error: "idClient requis" });
+    const { idEntreprise } = req.params;
+    if (!idEntreprise) {
+      return res.status(400).json({ error: "idEntreprise requis" });
     }
 
-    const client = await Clients.findOne({
-      where: { idClient },
+    const entreprise = await Entreprises.findOne({
+      where: { idEntreprise },
       include: [
         {
           model: Personnes,
@@ -96,19 +96,19 @@ exports.getClient = async (req, res) => {
       ]
     });
 
-    if (!client) {
-      return res.status(404).json({ error: "Client non trouvé" });
+    if (!entreprise) {
+      return res.status(404).json({ error: "Entreprise non trouvée" });
     }
 
-    const personneData = client.Personne.toJSON();
+    const personneData = entreprise.Personne.toJSON();
     delete personneData.motDePassePersonne;
 
-    const clientData = client.toJSON();
-    delete clientData.Personne;
+    const entrepriseData = entreprise.toJSON();
+    delete entrepriseData.Personne;
 
     const response = {
       personne: personneData,
-      client: clientData
+      entreprise: entrepriseData
     };
 
     res.status(200).json(response);
@@ -118,10 +118,10 @@ exports.getClient = async (req, res) => {
 };
 
 /**
- * Update a client
+ * Update an enterprise
  * Allow update if ID matches OR if user is gestionnaire/administrateur
  */
-exports.updateClient = async (req, res) => {
+exports.updateEntreprise = async (req, res) => {
   try {
     const token = extractBearer(req);
     if (!token) return res.status(401).json({ error: "Token manquant" });
@@ -132,55 +132,55 @@ exports.updateClient = async (req, res) => {
       return res.status(401).json({ error: "Token invalide" });
     }
 
-    const { idClient } = req.params;
-    if (!idClient) {
-      return res.status(400).json({ error: "idClient requis" });
+    const { idEntreprise } = req.params;
+    if (!idEntreprise) {
+      return res.status(400).json({ error: "idEntreprise requis" });
     }
 
     // Check authorization: allow if ID matches OR if user is gestionnaire/administrateur
-    const isOwnId = caller.sub == idClient;
+    const isOwnId = caller.sub == idEntreprise;
     const isAdminOrGest = ensureRoles(caller, ["gestionnaire", "administrateur"]);
 
     if (!isOwnId && !isAdminOrGest) {
       return res.status(403).json({ error: "Accès refusé" });
     }
 
-    const client = await Clients.findOne({
-      where: { idClient },
+    const entreprise = await Entreprises.findOne({
+      where: { idEntreprise },
       include: { model: Personnes }
     });
-    if (!client) {
-      return res.status(404).json({ error: "Client non trouvé" });
+    if (!entreprise) {
+      return res.status(404).json({ error: "Entreprise non trouvée" });
     }
 
     // Update person fields (except password)
     const { nomPersonne, prenomPersonne, telephonePersonne, emailPersonne } = req.body;
-    if (nomPersonne) client.Personne.nomPersonne = nomPersonne;
-    if (prenomPersonne) client.Personne.prenomPersonne = prenomPersonne;
-    if (telephonePersonne) client.Personne.telephonePersonne = telephonePersonne;
-    if (emailPersonne) client.Personne.emailPersonne = emailPersonne;
-    await client.Personne.save();
+    if (nomPersonne) entreprise.Personne.nomPersonne = nomPersonne;
+    if (prenomPersonne) entreprise.Personne.prenomPersonne = prenomPersonne;
+    if (telephonePersonne) entreprise.Personne.telephonePersonne = telephonePersonne;
+    if (emailPersonne) entreprise.Personne.emailPersonne = emailPersonne;
+    await entreprise.Personne.save();
 
-    // Update client fields
-    const { adresseClient } = req.body;
-    if (adresseClient) client.adresseClient = adresseClient;
+    // Update entreprise fields
+    const { secteurActiviteEntreprise } = req.body;
+    if (secteurActiviteEntreprise) entreprise.secteurActiviteEntreprise = secteurActiviteEntreprise;
 
-    await client.save();
+    await entreprise.save();
 
-    const clientUpdated = await Clients.findOne({
-      where: { idClient },
+    const entrepriseUpdated = await Entreprises.findOne({
+      where: { idEntreprise },
       include: { model: Personnes, attributes: { exclude: ["motDePassePersonne"] } }
     });
 
-    const personneData = clientUpdated.Personne.toJSON();
+    const personneData = entrepriseUpdated.Personne.toJSON();
     delete personneData.motDePassePersonne;
 
-    const clientData = clientUpdated.toJSON();
-    delete clientData.Personne;
+    const entrepriseData = entrepriseUpdated.toJSON();
+    delete entrepriseData.Personne;
 
     const response = {
       personne: personneData,
-      client: clientData
+      entreprise: entrepriseData
     };
 
     res.status(200).json(response);
@@ -190,10 +190,10 @@ exports.updateClient = async (req, res) => {
 };
 
 /**
- * Delete a client
+ * Delete an entreprise
  * Allow delete if ID matches OR if user is gestionnaire/administrateur
  */
-exports.deleteClient = async (req, res) => {
+exports.deleteEntreprise = async (req, res) => {
   try {
     const token = extractBearer(req);
     if (!token) return res.status(401).json({ error: "Token manquant" });
@@ -204,26 +204,26 @@ exports.deleteClient = async (req, res) => {
       return res.status(401).json({ error: "Token invalide" });
     }
 
-    const { idClient } = req.params;
-    if (!idClient) {
-      return res.status(400).json({ error: "idClient requis" });
+    const { idEntreprise } = req.params;
+    if (!idEntreprise) {
+      return res.status(400).json({ error: "idEntreprise requis" });
     }
 
-    const isOwnId = caller.sub == idClient;
+    const isOwnId = caller.sub == idEntreprise;
     const isAdminOrGest = ensureRoles(caller, ["gestionnaire", "administrateur"]);
 
     if (!isOwnId && !isAdminOrGest) {
       return res.status(403).json({ error: "Accès refusé" });
     }
 
-    const client = await Clients.findOne({ where: { idClient } });
-    if (!client) {
-      return res.status(404).json({ error: "Client non trouvé" });
+    const entreprise = await Entreprises.findOne({ where: { idEntreprise } });
+    if (!entreprise) {
+      return res.status(404).json({ error: "Entreprise non trouvée" });
     }
 
-    await client.destroy();
+    await entreprise.destroy();
 
-    res.status(200).json({ message: "Client supprimé avec succès" });
+    res.status(200).json({ message: "Entreprise supprimée avec succès" });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

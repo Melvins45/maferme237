@@ -16,8 +16,16 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
     },
     niveauAccesAdministrateur: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.INTEGER,
       allowNull: true
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'personnes',
+        key: 'idPersonne'
+      }
     },
     createdAt: {
       type: DataTypes.DATE,

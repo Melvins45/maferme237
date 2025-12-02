@@ -10,9 +10,11 @@ module.exports = (sequelize, DataTypes) => {
       // In models/fournisseurs.js consider: this.hasMany(models.Produits, { foreignKey: 'idFournisseur' });
       this.belongsTo(models.Gestionnaires, { foreignKey: 'idGestionnaire' });
       // In models/gestionnaires.js consider: this.hasMany(models.Produits, { foreignKey: 'idGestionnaire' });
+      this.belongsTo(models.CategorieProduits, { foreignKey: 'idCategorieProduit', as: 'categorie' });
       this.belongsToMany(models.Etapeproductions, { through: models.Etapeproduits, foreignKey: 'idProduit', otherKey: 'idEtapeProduction' });
       this.hasMany(models.Plannificationetapeproductions, { foreignKey: 'idProduit' });
       // In models/plannificationetapeproductions.js consider: this.belongsTo(models.Produits, { foreignKey: 'idProduit' });
+      this.hasMany(models.ProduitImages, { foreignKey: 'idProduit', as: 'images' });
     }
   }
   Produits.init({
@@ -57,10 +59,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    photosProduit: {
-      type: DataTypes.STRING(255),
-      allowNull: true
-    },
     statutVerificationProduit: {
       type: DataTypes.STRING(255),
       allowNull: true
@@ -84,6 +82,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true
     },
     idGestionnaire: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    idCategorieProduit: {
       type: DataTypes.INTEGER,
       allowNull: true
     },
