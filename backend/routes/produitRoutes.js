@@ -167,15 +167,20 @@ const authenticate = require("../middlewares/auth");
  *                             type: object
  *                             properties:
  *                               valeurCaracteristique: { type: string }
- *                     createur:
- *                       type: object
- *                       description: Informations du créateur du produit (fournisseur, producteur ou gestionnaire)
- *                       properties:
- *                         id: { type: integer }
- *                         role: { type: string, enum: [fournisseur, producteur, gestionnaire] }
- *                         fournisseur: { type: object, nullable: true }
- *                         producteur: { type: object, nullable: true }
- *                         gestionnaire: { type: object, nullable: true }
+ *                   personne:
+ *                     type: object
+ *                     nullable: true
+ *                     description: Informations de la personne (uniquement si fournisseur)
+ *                     properties:
+ *                       idPersonne: { type: integer }
+ *                       nomPersonne: { type: string }
+ *                   fournisseur:
+ *                     type: object
+ *                     nullable: true
+ *                     description: Informations du fournisseur (uniquement si le produit est créé par un fournisseur)
+ *                     properties:
+ *                       idFournisseur: { type: integer }
+ *                       noteClientFournisseur: { type: string }
  *       400:
  *         description: Champs obligatoires manquants ou données de caractéristique invalides
  *       401:
@@ -254,12 +259,20 @@ const authenticate = require("../middlewares/auth");
  *                           type: object
  *                           properties:
  *                             valeurCaracteristique: { type: string }
- *                   createur:
+ *                   personne:
  *                     type: object
- *                     description: Informations du créateur du produit (fournisseur, producteur ou gestionnaire)
+ *                     nullable: true
+ *                     description: Informations de la personne (uniquement si fournisseur)
  *                     properties:
- *                       id: { type: integer }
- *                       role: { type: string }
+ *                       idPersonne: { type: integer }
+ *                       nomPersonne: { type: string }
+ *                   fournisseur:
+ *                     type: object
+ *                     nullable: true
+ *                     description: Informations du fournisseur (uniquement si le produit est créé par un fournisseur)
+ *                     properties:
+ *                       idFournisseur: { type: integer }
+ *                       noteClientFournisseur: { type: string }
  *       500:
  *         description: Erreur serveur
  */
@@ -377,12 +390,20 @@ router.get("/by-role/all", authenticate, produitController.getProduitsByRole);
  *                         type: object
  *                         properties:
  *                           valeurCaracteristique: { type: string }
- *                 createur:
+ *                 personne:
  *                   type: object
- *                   description: Informations du créateur du produit
+ *                   nullable: true
+ *                   description: Informations de la personne (uniquement si fournisseur)
  *                   properties:
- *                     id: { type: integer }
- *                     role: { type: string }
+ *                     idPersonne: { type: integer }
+ *                     nomPersonne: { type: string }
+ *                 fournisseur:
+ *                   type: object
+ *                   nullable: true
+ *                   description: Informations du fournisseur (uniquement si le produit est créé par un fournisseur)
+ *                   properties:
+ *                     idFournisseur: { type: integer }
+ *                     noteClientFournisseur: { type: string }
  *       400:
  *         description: Paramètre idProduit manquant
  *       404:
@@ -582,13 +603,21 @@ router.delete("/:idProduit", authenticate, produitController.deleteProduit);
  *                         type: object
  *                         properties:
  *                           idCaracteristique: { type: integer }
- *                           nomCaracteristique: { type: string }
- *                     createur:
+ *                         nomCaracteristique: { type: string }
+ *                     personne:
  *                       type: object
- *                       description: Informations du créateur du produit
+ *                       nullable: true
+ *                       description: Informations de la personne (uniquement si fournisseur)
  *                       properties:
- *                         id: { type: integer }
- *                         role: { type: string }
+ *                         idPersonne: { type: integer }
+ *                         nomPersonne: { type: string }
+ *                     fournisseur:
+ *                       type: object
+ *                       nullable: true
+ *                       description: Informations du fournisseur (uniquement si le produit est créé par un fournisseur)
+ *                       properties:
+ *                         idFournisseur: { type: integer }
+ *                         noteClientFournisseur: { type: string }
  *       400:
  *         description: Le produit est déjà vérifié ou données invalides
  *       401:
@@ -662,13 +691,21 @@ router.post("/:idProduit/verify", authenticate, produitController.verifyProduit)
  *                         type: object
  *                         properties:
  *                           idCaracteristique: { type: integer }
- *                           nomCaracteristique: { type: string }
- *                     createur:
+ *                         nomCaracteristique: { type: string }
+ *                     personne:
  *                       type: object
- *                       description: Informations du créateur du produit
+ *                       nullable: true
+ *                       description: Informations de la personne (uniquement si fournisseur)
  *                       properties:
- *                         id: { type: integer }
- *                         role: { type: string }
+ *                         idPersonne: { type: integer }
+ *                         nomPersonne: { type: string }
+ *                     fournisseur:
+ *                       type: object
+ *                       nullable: true
+ *                       description: Informations du fournisseur (uniquement si le produit est créé par un fournisseur)
+ *                       properties:
+ *                         idFournisseur: { type: integer }
+ *                         noteClientFournisseur: { type: string }
  *       400:
  *         description: Le produit n'est pas vérifié ou données invalides
  *       401:
